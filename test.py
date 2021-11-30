@@ -1,11 +1,19 @@
 import pandas as pd
 
 def test(filename: str, lst: list[str]):
+    """
+    Save only the desired columns in lst from filename as a DataFrame.
+
+    Note: filename should have double backslashes in the path.
+    """
     file = pd.read_csv(filename, usecols=lst)
     return file
 
 
 def sort_file(city_migration):
+    """
+    WIP: generalizing sorting by row.
+    """
     lst = []
     keywords = {'Net interprovincial migration', 'Net intraprovincial migration'}
     for x in range(len(city_migration)):
@@ -15,6 +23,10 @@ def sort_file(city_migration):
 
 
 def split_file(city_migration):
+    """
+    Split city_migration data into two separate DataFrames; one for intraprovincial
+        migration and the other for interprovincial.
+    """
     inter = []
     intra = []
 
