@@ -18,7 +18,7 @@ def sort_file(dataframe, keywords: set[str], column: str):
         specific keyword.
 
     Ex. city_migration; keywords = {'Net interprovincial migration',
-            'Net intraprovincial migration'}, columnn = 'Components of population growth'.
+            'Net intraprovincial migration'}, column = 'Components of population growth'.
 
     Generalization untested.
     """
@@ -29,15 +29,23 @@ def sort_file(dataframe, keywords: set[str], column: str):
     return pd.DataFrame(lst)
 
 
-def split_file(city_migration):
+def split_file(dataframe):
     """
     Split city_migration data into two separate DataFrames; one for intraprovincial
         migration and the other for interprovincial.
     """
+    column = 'Components of population growth'
     inter = []
     intra = []
+    for x in range(len(dataframe)):
+        if dataframe.loc[x, column] == 'Net interprovincial migration':
+            inter.append(dataframe.loc[x])
+        else:
+            intra.append(dataframe.loc[x])
+    return inter, intra
+
 
 
 
 if __name__ == '__main__':
-    print('hi')
+    pass
