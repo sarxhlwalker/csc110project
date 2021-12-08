@@ -6,8 +6,6 @@ def test(filename: str, lst: list[str]):
 
     Note: filename should have double backslashes in the path.
 
-    Generalization untested.
-
     Ex. file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     """
@@ -36,6 +34,7 @@ def split_file(dataframe):
     """
     Split city_migration data into two separate DataFrames; one for intraprovincial
         migration and the other for interprovincial.
+
     file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     sorted_file = sort_file(file, {'Net interprovincial migration', \
