@@ -7,6 +7,9 @@ def test(filename: str, lst: list[str]):
     Note: filename should have double backslashes in the path.
 
     Generalization untested.
+
+    Ex. file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+                'Components of population growth', 'VALUE'])
     """
     file = pd.read_csv(filename, usecols=lst)
     return file
@@ -33,16 +36,15 @@ def split_file(dataframe):
     """
     Split city_migration data into two separate DataFrames; one for intraprovincial
         migration and the other for interprovincial.
+    file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+                'Components of population growth', 'VALUE'])
+    sorted_file = sort_file(file, {'Net interprovincial migration', \
+            'Net intraprovincial migration'}, 'Components of population growth')
+    split_file(sorted_file)
     """
-    column = 'Components of population growth'
-    inter = []
-    intra = []
-    for x in range(len(dataframe)):
-        if dataframe.loc[x, column] == 'Net interprovincial migration':
-            inter.append(dataframe.loc[x])
-        else:
-            intra.append(dataframe.loc[x])
-    return inter, intra
+    inter = dataframe[dataframe['Components of population growth'] == 'Net interprovincial migration']
+    intra = dataframe[dataframe['Components of population growth'] == 'Net intraprovincial migration']
+    return (inter, intra)
 
 
 
