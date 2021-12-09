@@ -1,5 +1,4 @@
 import pandas as pd
-import statistics
 
 def test(filename: str, lst: list[str]) -> pd.DataFrame:
     """
@@ -46,7 +45,7 @@ def split_file(dataframe):
     return inter, intra
 
 
-def city_restrict(inter, intra, city: str):
+def city_restrict(inter, intra, city: str) -> tuple[list, list]:
     """Return the restriction of the data from split_file to the data only pertaining to city.
 
     Preconditions:
@@ -57,7 +56,7 @@ def city_restrict(inter, intra, city: str):
     >>> city_migration = sort_file(city_migration,{'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
     >>> inter, intra = split_file(city_migration)
-    >>> st_john_inter, st_john_intra = city_restrict(inter, intra, 'Saint John')
+    >>> st_john_inter, st_john_intra = city_restrict(inter, intra, 'Saint John (CMA), New Brunswick')
     """
     city_inter = []
     city_intra = []
@@ -80,6 +79,7 @@ def cleans_nan(dataframe):
     >>> clean_file = cleans_nan(file)
     """
     return dataframe.dropna()
+
 
 """
 - years need to start in july
