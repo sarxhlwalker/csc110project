@@ -55,38 +55,38 @@ def cleans_nan(dataframe):
     return dataframe.dropna()
 
 
+## HARD STUFF BELOW!
 
-def condense_time(dataframe, r: set[str], ds: int, cols: int):
+"""
+- put together times -- average the 'value' columns when we do this
+  - iterate through the column 'Date', if the substring has the correct year that we want, then we add the value to a list for that year 
+  - after we finish iterating through, add all the values in the list by calling the sum function and then divide by the length of the list by calling the len function (gives us the avergae for that year)
+  - append average to another list (ie. what we return)? 
+  - Repeat for every year
+
+
+- note: worry about years starting in july after
+
+"""
+
+
+def condense_time_manya(dataframe, range_of_years: list[str]) -> list:
     """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
         adjusted accordingly.
-
-    ds indicates whether or not it is a MLS dataset (month year; 1) or other (year month; 0).
-
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-            ['Date', 'Composite_Benchmark_SA', 'Single_Family_Benchmark_SA', \
-            'One_Storey_Benchmark_SA', 'Two_Storey_Benchmark_SA', 'Apartment_Benchmark_SA'])
-    >>> condensed = condense_time(file, {'2015', '2016', '2017', '2018', '2019', '2020'}, 1, 5)
+            ['Date', 'Single_Family_Benchmark_SA'])
+    >>> clean_file = cleans_nan(file)
+    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', '2020'])
     """
-    lst = []
-    if ds == 1:
-        for year in r:
-            lst.append(build_year(dataframe, year, cols))
-
-
-
-
-    return df
-
-
-def build_year(dataframe, year, cols):
-    """Helper function for condense_time."""
-    by = {}
-    count = 0
-    for i in range(len(dataframe)):
-        if dataframe.loc[i, 0][4:] == year:
-            by[year] = [dataframe.loc[i, x] for x in range(cols)] # how to add instead of replace?
-            count += 1
-
+    return_list = []
+    for x in range_of_years:
+        year_list = []
+        for row in range(len(dataframe)):
+            if dataframe.loc[row, 'Date'][4:] == x:
+                year_list.append(dataframe.loc[row, 'Single_Family_Benchmark_SA'])
+        avg = sum(year_list) / len(year_list)
+        return_list.append(avg)
+    return return_list
 
 
 if __name__ == '__main__':
