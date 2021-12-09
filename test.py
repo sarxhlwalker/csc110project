@@ -46,6 +46,33 @@ def split_file(dataframe):
     return inter, intra
 
 
+def city_restrict(inter, intra, city: str):
+    """Return the restriction of the data from split_file to the data only pertaining to city.
+
+    Preconditions:
+        - len(inter) == len(intra)
+
+    >>> city_migration = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+                'Components of population growth', 'VALUE'])
+    >>> city_migration = sort_file(city_migration,{'Net interprovincial migration', \
+            'Net intraprovincial migration'}, 'Components of population growth')
+    >>> inter, intra = split_file(city_migration)
+    >>> st_john_inter, st_john_intra = city_restrict(inter, intra, 'Saint John')
+    """
+    city_inter = []
+    city_intra = []
+
+    for row in inter.iterrows():
+        if row.loc['GEO'] == city:
+            city_inter.append(row.loc['VALUE'])
+
+    for row in intra.iterrows():
+        if row.loc['GEO'] == city:
+            city_intra.append(row.loc['VALUE'])
+
+    return city_inter, city_intra
+
+
 def cleans_nan(dataframe):
     """Removes random commas.
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
@@ -54,36 +81,27 @@ def cleans_nan(dataframe):
     """
     return dataframe.dropna()
 
-
-## HARD STUFF BELOW!
-
 """
-- put together times -- average the 'value' columns when we do this
-  - iterate through the column 'Date', if the substring has the correct year that we want, then we add the value to a list for that year 
-  - after we finish iterating through, add all the values in the list by calling the sum function and then divide by the length of the list by calling the len function (gives us the avergae for that year)
-  - append average to another list (ie. what we return)? 
-  - Repeat for every year
-
-
-- note: worry about years starting in july after
+- years need to start in july
 
 """
 
 
-def condense_time_manya(dataframe, range_of_years: list[str]) -> list:
+def condense_time_manya(dataframe, range_of_years: list[str], col: str) -> list:
     """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
         adjusted accordingly.
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
-    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', '2020'])
+    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', \
+            '2020'], 'Single_Family_Benchmark_SA')
     """
     return_list = []
     for x in range_of_years:
         year_list = []
         for row in range(len(dataframe)):
             if dataframe.loc[row, 'Date'][4:] == x:
-                year_list.append(dataframe.loc[row, 'Single_Family_Benchmark_SA'])
+                year_list.append(dataframe.loc[row, col])
         avg = sum(year_list) / len(year_list)
         return_list.append(avg)
     return return_list
