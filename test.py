@@ -1,4 +1,5 @@
 import pandas as pd
+import statistics
 
 def test(filename: str, lst: list[str]):
     """
@@ -43,6 +44,39 @@ def split_file(dataframe):
     inter = dataframe[dataframe['Components of population growth'] == 'Net interprovincial migration']
     intra = dataframe[dataframe['Components of population growth'] == 'Net intraprovincial migration']
     return (inter, intra)
+
+
+def condense_time(dataframe, r: set[str], ds: int, cols: int):
+    """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
+        adjusted accordingly.
+
+    ds indicates whether or not it is a MLS dataset (month year; 1) or other (year month; 0).
+
+    >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+            ['Date', 'Composite_Benchmark_SA', 'Single_Family_Benchmark_SA', \
+            'One_Storey_Benchmark_SA', 'Two_Storey_Benchmark_SA', 'Apartment_Benchmark_SA'])
+    >>> condensed = condense_time(file, {'2015', '2016', '2017', '2018', '2019', '2020'}, 1, 5)
+    """
+    lst = []
+    if ds == 1:
+        for year in r:
+            lst.append(build_year(dataframe, year, cols))
+
+
+
+
+    return df
+
+
+def build_year(dataframe, year, cols):
+    """Helper function for condense_time."""
+    by = {}
+    count = 0
+    for i in range(len(dataframe)):
+        if dataframe.loc[i, 0][4:] == year:
+            by[year] = [dataframe.loc[i, x] for x in range(cols)] # how to add instead of replace? 
+            count += 1
+
 
 
 if __name__ == '__main__':
