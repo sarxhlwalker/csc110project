@@ -39,11 +39,22 @@ def split_file(dataframe):
                 'Components of population growth', 'VALUE'])
     >>> sorted_file = sort_file(file, {'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
-    >>> split = split_file(sorted_file)
+    >>> inter, intra = split_file(sorted_file)
     """
     inter = dataframe[dataframe['Components of population growth'] == 'Net interprovincial migration']
     intra = dataframe[dataframe['Components of population growth'] == 'Net intraprovincial migration']
-    return (inter, intra)
+    return inter, intra
+
+
+def cleans_nan(dataframe):
+    """Removes random commas.
+
+    >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+            ['Date', 'Single_Family_Benchmark_SA'])
+    >>> clean_file = cleans_nan(file)
+    """
+    return dataframe[len(dataframe['Date']) > 1]
+
 
 
 def condense_time(dataframe, r: set[str], ds: int, cols: int):
@@ -74,7 +85,7 @@ def build_year(dataframe, year, cols):
     count = 0
     for i in range(len(dataframe)):
         if dataframe.loc[i, 0][4:] == year:
-            by[year] = [dataframe.loc[i, x] for x in range(cols)] # how to add instead of replace? 
+            by[year] = [dataframe.loc[i, x] for x in range(cols)] # how to add instead of replace?
             count += 1
 
 
