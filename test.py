@@ -48,12 +48,11 @@ def split_file(dataframe):
 
 def cleans_nan(dataframe):
     """Removes random commas.
-
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
     """
-    return dataframe[len(dataframe['Date']) > 1]
+    return dataframe.dropna()
 
 
 
