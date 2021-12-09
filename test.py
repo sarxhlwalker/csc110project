@@ -1,7 +1,7 @@
 import pandas as pd
 import statistics
 
-def test(filename: str, lst: list[str]):
+def test(filename: str, lst: list[str]) -> pd.DataFrame:
     """
     Save only the desired columns in lst from filename as a DataFrame.
 
@@ -62,11 +62,11 @@ def city_restrict(inter, intra, city: str):
     city_inter = []
     city_intra = []
 
-    for row in inter.iterrows():
+    for _, row in inter.iterrows():
         if row.loc['GEO'] == city:
             city_inter.append(row.loc['VALUE'])
 
-    for row in intra.iterrows():
+    for _, row in intra.iterrows():
         if row.loc['GEO'] == city:
             city_intra.append(row.loc['VALUE'])
 
