@@ -23,11 +23,11 @@ class City:
     """
     name: str
     year: list[tuple[datetime.datetime, datetime.datetime]]
-    intraprovincial: list[int]
-    interprovincial: list[int]
-    house_land_avg: list[float]
-    house_avg: list[float]
-    land_avg: list[float]
+    intraprovincial: list[int]      # sarah
+    interprovincial: list[int]      # sarah
+    house_land_avg: list[float]     # manya and sima
+    house_avg: list[float]          # sima
+    land_avg: list[float]           # sima
 
     def __init__(self, name: str, year: list[tuple[datetime.datetime, datetime.datetime]], intraprovincial: list[int],
              interprovincial: list[int], house_land_avg: list[float], house_avg: list[float],

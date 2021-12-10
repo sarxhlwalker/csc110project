@@ -91,24 +91,37 @@ def cleans_nan(dataframe):
 """
 
 
-def condense_time_manya(dataframe, range_of_years: list[str], col: str, target: str) -> list:
-    """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
+def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str], col: str, target: str) -> list[float]:
+    """Create a copy of a dataframe such that Date is the span of one year, and Single_Family_Benchmark_SA is
         adjusted accordingly.
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
-    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', \
-            '2020'], 'Single_Family_Benchmark_SA', 'Date')
+    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'], \
+            'Single_Family_Benchmark_SA', 'Date')
     """
     return_list = []
     for x in range_of_years:
         year_list = []
-        for row in range(len(dataframe)):
-            if dataframe.loc[row, target][4:] == x:
-                year_list.append(dataframe.loc[row, col])
+        row = 0
+        while row < len(dataframe):
+            if dataframe.loc[row, target][0:3] == 'Jul' and dataframe.loc[row, target][4:] == x:
+                year_list = iterate_twelve(dataframe, year_list, row, col)
+                row += 12
+            else:
+                row += 1
         avg = sum(year_list) / len(year_list)
         return_list.append(avg)
     return return_list
+
+
+def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int, col: str):
+    """
+    Add twelve items to year_list. Helper function for condense_time_manya.
+    """
+    for i in range(12):
+        year_list.append(dataframe.loc[row + i, col])
+    return year_list
 
 
 def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str], col: str, target: str) -> list[float]:
@@ -120,6 +133,13 @@ def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str], col: str
     >>> house = sort_file(house, {'Total (house and land)'}, 'New housing price indexes')
     >>> house = cleans_nan(house)
     >>> house_list = condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
+                '2020'], 'VALUE', 'REF_DATE')
+
+    >>> house_only = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+                'New housing price indexes', 'VALUE'])
+    >>> house_only = sort_file(house_only, {'House only'}, 'New housing price indexes')
+    >>> house_only = cleans_nan(house_only)
+    >>> house_only_list = condense_time_sima(house_only, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'], 'VALUE', 'REF_DATE')
     """
     return_list = []
@@ -133,7 +153,7 @@ def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str], col: str
     return return_list
 
 
-def avg_things(city_list: Optional[list[float]], house_list: list[float]) -> list[float]:
+def avg_datasets(city_list: Optional[list[float]], house_list: list[float]) -> list[float]:
     """
     Return a list of values from the two datasets provided.
 
@@ -154,7 +174,7 @@ def avg_things(city_list: Optional[list[float]], house_list: list[float]) -> lis
     >>> house_list = condense_time_manya(house, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'], 'VALUE', 'REF_DATE')
 
-    >>> house_land_avg = avg_things(city_list, house_list)
+    >>> house_land_avg = avg_datasets(city_list, house_list)
     """
     return_list = []
     for i in range(len(city_list)):
