@@ -1,10 +1,12 @@
-from bokeh.plotting import figure, output_file, show
+import bokeh.plotting as plotting
+import bokeh.palettes as palettes
 import main
 import classes
 
-def plot_intra(city: classes.City, city_name: str):
+def plot(city: classes.City, city_name: str) -> None:
     """
-    Plotting and such.
+    Plots all five values of city into one graph; x-axis is consistently the years.
+
     >>> st_john_mls = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
                  ['Date', 'Single_Family_Benchmark_SA'])
     >>> st_john_mls = main.cleans_nan(st_john_mls)
@@ -41,13 +43,27 @@ def plot_intra(city: classes.City, city_name: str):
     >>> st_john = classes.City('Saint John', year, st_john_intra, st_john_inter, st_john_mls_list, \
                         house_only_list, land_only_list)
 
-    >>> plot_intra(st_john, 'Saint John')
+    >>> plot(st_john, 'Saint John')
     """
-    output_file('line.html')
-    p = figure(title=city_name)
-    p.line(x=city.year, y=city.intraprovincial)
-    show(p)
+    file_name = city_name + '.html'
+    plotting.output_file(file_name)
+    p = plotting.figure(title=city_name)
+    colours = palettes.viridis(5)
+    p.line(x=city.year, y=city.intraprovincial, line_color=colours[0])
+    p.line(x=city.year, y=city.interprovincial, line_color=colours[1])
+    p.line(x=city.year, y=city.house_land_avg, line_color=colours[2])
+    plotting.show(p)
 
+#
+# def condense_info(city: classes.City) -> list[list]:
+#     """Condense aspects of city so that plot() can call multi_line."""
+#     intra = [city.year, city.intraprovincial]
+#     inter = [city.year, city.interprovincial]
+#     hl_avg = [city.year, city.house_land_avg]
+#     house = [city.year, city.house_avg]
+#     land = [city.year, city.land_avg]
+#     tot = [intra, inter, hl_avg, house, land]
+#     return tot
 
 if __name__ == '__main__':
     pass
