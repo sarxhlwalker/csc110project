@@ -91,29 +91,43 @@ def cleans_nan(dataframe):
 """
 
 
-def condense_time_manya(dataframe, range_of_years: list[str], col: str, target: str, start: int, end: int) -> list:
+def condense_time_manya(dataframe, range_of_years: list[str], col: str, target: str) -> list:
     """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
         adjusted accordingly.
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
     >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', \
-            '2020'], 'Single_Family_Benchmark_SA', 'Date', 4, 8)
-
-    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
-                'New housing price indexes', 'VALUE'])
-    >>> house = sort_file(house, {'Total (house and land)'}, 'New housing price indexes')
-    >>> house = cleans_nan(house)
-    >>> house_list = condense_time_manya(house, ['2015', '2016', '2017', '2018', '2019', \
-                '2020'], 'VALUE', 'REF_DATE', 0, 4)
+            '2020'], 'Single_Family_Benchmark_SA', 'Date')
     """
     return_list = []
     for x in range_of_years:
         year_list = []
         for row in range(len(dataframe)):
-            breakpoint()
-            if dataframe.loc[row, target][start:end] == x:
+            if dataframe.loc[row, target][4:] == x:
                 year_list.append(dataframe.loc[row, col])
+        avg = sum(year_list) / len(year_list)
+        return_list.append(avg)
+    return return_list
+
+
+def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str], col: str, target: str) -> list[float]:
+    """
+    Does the thing.
+
+    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+                'New housing price indexes', 'VALUE'])
+    >>> house = sort_file(house, {'Total (house and land)'}, 'New housing price indexes')
+    >>> house = cleans_nan(house)
+    >>> house_list = condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
+                '2020'], 'VALUE', 'REF_DATE')
+    """
+    return_list = []
+    for year in range_years:
+        year_list = []
+        for _, row in dataframe.iterrows():
+            if row.loc['REF_DATE'][0:4] == year:
+                year_list.append(row.loc['VALUE'])
         avg = sum(year_list) / len(year_list)
         return_list.append(avg)
     return return_list
