@@ -1,11 +1,10 @@
 import pandas as pd
-from typing import Optional
 
-def test(filename: str, lst: list[str]) -> pd.DataFrame:
+def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     """
     Save only the desired columns in lst from filename as a DataFrame.
 
-    >>> file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+    >>> file = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     """
     file = pd.read_csv(filename, usecols=lst)
@@ -17,7 +16,7 @@ def sort_file(dataframe, keywords: set[str], column: str):
     Create and return a new DataFrame containing only rows whose specified column are a
         specific keyword.
 
-    >>> file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+    >>> file = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     >>> sorted_file = sort_file(file,{'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
@@ -34,7 +33,7 @@ def split_file(dataframe):
     Split city_migration data into two separate DataFrames; one for intraprovincial
     migration and the other for interprovincial.
 
-    >>> file = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+    >>> file = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     >>> sorted_file = sort_file(file, {'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
@@ -54,7 +53,7 @@ def restrict_city_sarah(dataframe: pd.DataFrame, city: str, lookup: str, add: st
     Preconditions:
         - len(inter) == len(intra)
 
-    >>> city_migration = test('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+    >>> city_migration = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     >>> city_migration = sort_file(city_migration,{'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
@@ -73,7 +72,7 @@ def restrict_city_sima(dataframe: pd.DataFrame, city: str, lookup: str) -> pd.Da
     """Restricts city but returns a DataFrame, because more computations are needed on Sima's data.
 
     >>> type_of_house = 'Total (house and land)'
-    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+    >>> house = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
                 'New housing price indexes', 'VALUE'])
     >>> house = sort_file(house, {type_of_house}, 'New housing price indexes')
     >>> house = cleans_nan(house)
@@ -90,39 +89,41 @@ def restrict_city_sima(dataframe: pd.DataFrame, city: str, lookup: str) -> pd.Da
 def cleans_nan(dataframe):
     """Removes random commas.
 
-    >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+    >>> file = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
     """
     return dataframe.dropna()
 
 
-"""
-- Create a run_simulation function that calls all the functions that we made in the order that we want the TA's to run 
-    it in
+""" 
+TODO: 
+- Create a run_simulation function that calls all the functions that we made in the order that we 
+    want the TA's to run it in
 - instead of pass in if __main__, put run_simulation()
-- make dictionary mapping manya's dataset city names to sarah and sima's dataset city names; str -> list
+- make dictionary mapping manya's dataset city names to sarah and sima's dataset city names; 
+    str -> list
 - add pythonta to if __main__
 """
 
-def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str], col: str, target: str) \
+def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str], col: str) \
         -> list[float]:
     """
     Create a copy of a dataframe such that Date is the span of one year, and Single_Family_Benchmark_SA is
     adjusted accordingly.
 
-    >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+    >>> file = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
     >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'], \
-            'Single_Family_Benchmark_SA', 'Date')
+            'Single_Family_Benchmark_SA')
     """
     return_list = []
     for x in range_of_years:
         year_list = []
         row = 0
         while row < len(dataframe):
-            if dataframe.loc[row, target][0:3] == 'Jul' and dataframe.loc[row, target][4:] == x:
+            if dataframe.loc[row, 'Date'][0:3] == 'Jul' and dataframe.loc[row, 'Date'][4:] == x:
                 year_list = iterate_twelve(dataframe, year_list, row, col)
                 row += 12
             else:
@@ -141,24 +142,24 @@ def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int, col:
     return year_list
 
 
-def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str], col: str, target: str) -> list[float]:
+def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str]) -> list[float]:
     """
     Create a copy of a dataframe such that REF_DATE is the span of one year from July to June, and
     VALUE is adjusted accordingly.
 
-    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+    >>> house = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
                 'New housing price indexes', 'VALUE'])
     >>> house = sort_file(house, {'Total (house and land)'}, 'New housing price indexes')
     >>> house = cleans_nan(house)
     >>> house_list = condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
-                '2020'], 'VALUE', 'REF_DATE')
+                '2020'])
 
-    >>> house_only = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+    >>> house_only = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
                 'New housing price indexes', 'VALUE'])
     >>> house_only = sort_file(house_only, {'House only'}, 'New housing price indexes')
     >>> house_only = cleans_nan(house_only)
     >>> house_only_list = condense_time_sima(house_only, ['2015', '2016', '2017', '2018', '2019', \
-                '2020'], 'VALUE', 'REF_DATE')
+                '2020'])
     """
     return_list = []
     month1 = {'07', '08', '09', '10', '11', '12'}
@@ -183,21 +184,21 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
     Preconditions:
         - len(city_list) == len(house_list)
 
-    >>> city = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+    >>> city = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
               ['Date', 'Single_Family_Benchmark_SA'])
     >>> city = cleans_nan(city)
     >>> city_list = condense_time_manya(city, ['2015', '2016', '2017', '2018', '2019'], \
-                                        'Single_Family_Benchmark_SA', 'Date')
+                                        'Single_Family_Benchmark_SA')
 
     >>> type_of_house = 'Total (house and land)'
-    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+    >>> house = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
                 'New housing price indexes', 'VALUE'])
     >>> house = sort_file(house, {type_of_house}, 'New housing price indexes')
     >>> house = cleans_nan(house)
     >>> house = restrict_city_sima(house, 'Saint John, Fredericton, and Moncton, New Brunswick', \
                                 'GEO')
     >>> house_list = condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
-                '2020'], 'VALUE', 'REF_DATE')
+                '2020'])
 
     >>> house_land_avg = avg_datasets(city_list, house_list)
     """
