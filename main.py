@@ -121,6 +121,9 @@ TODO:
     want the TA's to run it in. implement CITY_DICT in run_simulation()
 - instead of pass in if __main__, put run_simulation()
 - add pythonta to if __main__
+- finish plotting
+- make website
+- complexity things (ex. downloading csv) 
 """
 
 def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str], col: str) \
@@ -227,6 +230,29 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
         avg = s / 2
         return_list.append(avg)
     return return_list
+
+
+def adjust_sima_hpi(dataframe: pd.DataFrame) -> dict:
+    """
+    Return a dictionary mapping (month, year, land, house, or composite) to (house price indexes with index=100 set in
+    January 2005).
+
+    The file originally had index=100 set in January 2016. This was done so that our data matched the other csv files.
+    """
+    hpi_base_case = []
+    for row in range(34562, 34682):  # 2005-01
+        hpi_base_case.append(dataframe.loc[row, 'VALUE'])
+    adjusted_values = {}
+    for row in range(49682, 56882):
+        old_hpi = dataframe.loc[row, 'VALUE']
+        key = str(dataframe.loc[row, 'REF_DATE']) + ', ' + str(
+            dataframe.loc[row, 'GEO'] + ', ' + dataframe.loc[row, 'New housing price indexes'])
+        if hpi_base_case[(row - 2) % 120] is not None and old_hpi is not None:
+            adjusted_values[key] = round((float(old_hpi) / float(hpi_base_case[(row - 2) % 120]))
+                                         * 100, 1)
+        else:
+            adjusted_values[key] = None
+    return adjusted_values
 
 
 if __name__ == '__main__':
