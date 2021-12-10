@@ -52,18 +52,11 @@ def plot(city: classes.City, city_name: str) -> None:
     p.line(x=city.year, y=city.intraprovincial, line_color=colours[0])
     p.line(x=city.year, y=city.interprovincial, line_color=colours[1])
     p.line(x=city.year, y=city.house_land_avg, line_color=colours[2])
+
+    # same as idea for the other values, but we're gonna have 3 diff scales
+
     plotting.show(p)
 
-#
-# def condense_info(city: classes.City) -> list[list]:
-#     """Condense aspects of city so that plot() can call multi_line."""
-#     intra = [city.year, city.intraprovincial]
-#     inter = [city.year, city.interprovincial]
-#     hl_avg = [city.year, city.house_land_avg]
-#     house = [city.year, city.house_avg]
-#     land = [city.year, city.land_avg]
-#     tot = [intra, inter, hl_avg, house, land]
-#     return tot
 
 if __name__ == '__main__':
     pass
