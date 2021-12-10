@@ -109,7 +109,7 @@ def cleans_nan(dataframe):
     """Removes random commas.
 
     >>> file = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-            ['Date', 'Single_Family_Benchmark_SA'])
+            ['Date', 'Single_Family_HPI_SA'])
     >>> clean_file = cleans_nan(file)
     """
     return dataframe.dropna()
@@ -129,14 +129,14 @@ TODO:
 def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str], col: str) \
         -> list[float]:
     """
-    Create a copy of a dataframe such that Date is the span of one year, and Single_Family_Benchmark_SA is
+    Create a copy of a dataframe such that Date is the span of one year, and Single_Family_HPI_SA is
     adjusted accordingly.
 
     >>> file = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-            ['Date', 'Single_Family_Benchmark_SA'])
+            ['Date', 'Single_Family_HPI_SA'])
     >>> clean_file = cleans_nan(file)
     >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'], \
-            'Single_Family_Benchmark_SA')
+            'Single_Family_HPI_SA')
     """
     return_list = []
     for x in range_of_years:
@@ -207,10 +207,10 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
         - len(city_list) == len(house_list)
 
     >>> city = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-              ['Date', 'Single_Family_Benchmark_SA'])
+              ['Date', 'Single_Family_HPI_SA'])
     >>> city = cleans_nan(city)
     >>> city_list = condense_time_manya(city, ['2015', '2016', '2017', '2018', '2019'], \
-                                        'Single_Family_Benchmark_SA')
+                                        'Single_Family_HPI_SA')
 
     >>> type_of_house = 'Total (house and land)'
     >>> house = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \

@@ -6,10 +6,10 @@ class City:
     A class to contain all the necessary information for one city.
 
     >>> st_john_mls = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-                 ['Date', 'Single_Family_Benchmark_SA'])
+                 ['Date', 'Single_Family_HPI_SA'])
     >>> st_john_mls = main.cleans_nan(st_john_mls)
     >>> st_john_mls_list = main.condense_time_manya(st_john_mls, ['2015', '2016', '2017', \
-                                                '2018', '2019'], 'Single_Family_Benchmark_SA')
+                                                '2018', '2019'], 'Single_Family_HPI_SA')
 
     >>> type_of_house = 'Total (house and land)'
     >>> house = main.read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
