@@ -36,7 +36,7 @@ class City:
             'Net intraprovincial migration'}, 'Components of population growth')
     >>> inter, intra = main.split_file(city_migration)
     >>> st_john_inter = main.restrict_city_sarah(inter, 'Saint John (CMA), New Brunswick', 'GEO', 'VALUE')
-    >>> st_john_intra = main.restrict_city_sarah(inter, 'Saint John (CMA), New Brunswick', 'GEO', 'VALUE')
+    >>> st_john_intra = main.restrict_city_sarah(intra, 'Saint John (CMA), New Brunswick', 'GEO', 'VALUE')
 
     >>> house_only = main.read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
                 'New housing price indexes', 'VALUE'])
@@ -60,7 +60,7 @@ class City:
                         house_only_list, land_only_list)
     """
     name: str
-    year: list[tuple[datetime.datetime, datetime.datetime]]
+    year: list
     intraprovincial: list[int]      # sarah
     interprovincial: list[int]      # sarah
     house_land_avg: list[float]     # manya and sima
