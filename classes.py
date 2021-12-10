@@ -16,7 +16,7 @@ class City:
                 'New housing price indexes', 'VALUE'])
     >>> house = main.sort_file(house, {type_of_house}, 'New housing price indexes')
     >>> house = main.cleans_nan(house)
-    >>> house = main.restrict_city_sima(house, 'Saint John, Fredericton, and Moncton, New Brunswick', \
+    >>> house = main.restrict_city_sima(house, "St. John's, Newfoundland and Labrador", \
                                 'GEO')
     >>> house_list = main.condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'])
@@ -43,7 +43,7 @@ class City:
     >>> house_only = main.sort_file(house_only, {'House only'}, 'New housing price indexes')
     >>> house_only = main.cleans_nan(house_only)
     >>> house_only = main.restrict_city_sima(house_only, \
-                                    'Saint John, Fredericton, and Moncton, New Brunswick', 'GEO')
+                                    "St. John's, Newfoundland and Labrador", 'GEO')
     >>> house_only_list = main.condense_time_sima(house_only, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'])
 
@@ -52,7 +52,7 @@ class City:
     >>> land_only = main.sort_file(land_only, {'Land only'}, 'New housing price indexes')
     >>> land_only = main.cleans_nan(land_only)
     >>> land_only = main.restrict_city_sima(land_only, \
-                                    'Saint John, Fredericton, and Moncton, New Brunswick', 'GEO')
+                                    "St. John's, Newfoundland and Labrador", 'GEO')
     >>> land_only_list = main.condense_time_sima(land_only, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'])
 

@@ -1,5 +1,24 @@
 import pandas as pd
 
+# CITY_DICT maps Manya's city names to a list of first Sarah's and then Sima's city names.
+
+CITY_DICT = {'Cambridge': ['Kitchener - Cambridge - Waterloo (CMA), Ontario', \
+                           'Kitchener-Cambridge-Waterloo, Ontario'], 'Fredricton': \
+    ['Fredericton (CA), New Brunswick', 'Saint John, Fredericton, and Moncton, New Brunswick'], \
+             'Greater Moncton': \
+                 ['Moncton (CMA), New Brunswick', "St. John's, Newfoundland and Labrador"], \
+    'Greater Toronto': ['Toronto (CMA), Ontario', 'Toronto, Ontario'], 'Greater Vancouver': \
+             ['Vancouver (CMA), British Columbia', 'Vancouver, British Columbia'], \
+    'Guelph and district': ['Guelph (CMA), Ontario', 'Guelph, Ontario'], 'Kitchener and Waterloo': \
+             ['Kitchener - Cambridge - Waterloo (CMA), Ontario', \
+              'Kitchener-Cambridge-Waterloo, Ontario'], \
+    'London St Thomas': ['London (CMA), Ontario', 'London, Ontario'], 'Montreal CMA': \
+                 ['Montréal (CMA), Quebec', 'Montréal, Quebec'], 'Niagara Region': \
+                 ['St. Catharines - Niagara (CMA), Ontario', 'St. Catharines-Niagara, Ontario'], \
+    'Quebec CMA': ['Québec (CMA), Quebec', 'Québec, Quebec'], 'Saint John': \
+                 ['Saint John (CMA), New Brunswick', "St. John's, Newfoundland and Labrador"], \
+    'Victoria': ['Victoria (CMA), British Columbia', 'Victoria, British Columbia']}
+
 def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     """
     Save only the desired columns in lst from filename as a DataFrame.
@@ -76,8 +95,8 @@ def restrict_city_sima(dataframe: pd.DataFrame, city: str, lookup: str) -> pd.Da
                 'New housing price indexes', 'VALUE'])
     >>> house = sort_file(house, {type_of_house}, 'New housing price indexes')
     >>> house = cleans_nan(house)
-    >>> house = restrict_city_sima(house, 'Saint John, Fredericton, and Moncton, New Brunswick', \
-                                'GEO', 'VALUE')
+    >>> house = restrict_city_sima(house, "St. John's, Newfoundland and Labrador", \
+                                'GEO')
     """
     lst = []
     for _, row in dataframe.iterrows():
@@ -99,10 +118,8 @@ def cleans_nan(dataframe):
 """ 
 TODO: 
 - Create a run_simulation function that calls all the functions that we made in the order that we 
-    want the TA's to run it in
+    want the TA's to run it in. implement CITY_DICT in run_simulation()
 - instead of pass in if __main__, put run_simulation()
-- make dictionary mapping manya's dataset city names to sarah and sima's dataset city names; 
-    str -> list
 - add pythonta to if __main__
 """
 
@@ -158,6 +175,8 @@ def condense_time_sima(dataframe: pd.DataFrame, range_years: list[str]) -> list[
                 'New housing price indexes', 'VALUE'])
     >>> house_only = sort_file(house_only, {'House only'}, 'New housing price indexes')
     >>> house_only = cleans_nan(house_only)
+    >>> house = restrict_city_sima(house, "St. John's, Newfoundland and Labrador", \
+                                'GEO')
     >>> house_only_list = condense_time_sima(house_only, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'])
     """
@@ -195,7 +214,7 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
                 'New housing price indexes', 'VALUE'])
     >>> house = sort_file(house, {type_of_house}, 'New housing price indexes')
     >>> house = cleans_nan(house)
-    >>> house = restrict_city_sima(house, 'Saint John, Fredericton, and Moncton, New Brunswick', \
+    >>> house = restrict_city_sima(house, "St. John's, Newfoundland and Labrador", \
                                 'GEO')
     >>> house_list = condense_time_sima(house, ['2015', '2016', '2017', '2018', '2019', \
                 '2020'])
