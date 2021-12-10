@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Optional
 
 def test(filename: str, lst: list[str]) -> pd.DataFrame:
     """
@@ -83,26 +84,68 @@ def cleans_nan(dataframe):
 
 """
 - years need to start in july
-
+- Create a run_simulation function that calls all the functions that we made in the order that we want the TA's to run 
+    it in
+- instead of pass in if __main__, put run_simulation()
+- make dictionary mapping manya's dataset city names to sarah and sima's dataset city names; str -> list
 """
 
 
-def condense_time_manya(dataframe, range_of_years: list[str], col: str) -> list:
+def condense_time_manya(dataframe, range_of_years: list[str], col: str, target: str, start: int, end: int) -> list:
     """Create a copy of a dataframe such that REF_DATE is the span of one year, and VALUE is
         adjusted accordingly.
     >>> file = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_Benchmark_SA'])
     >>> clean_file = cleans_nan(file)
     >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019', \
-            '2020'], 'Single_Family_Benchmark_SA')
+            '2020'], 'Single_Family_Benchmark_SA', 'Date', 4, 8)
+
+    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+                'New housing price indexes', 'VALUE'])
+    >>> house = sort_file(house, {'Total (house and land)'}, 'New housing price indexes')
+    >>> house = cleans_nan(house)
+    >>> house_list = condense_time_manya(house, ['2015', '2016', '2017', '2018', '2019', \
+                '2020'], 'VALUE', 'REF_DATE', 0, 4)
     """
     return_list = []
     for x in range_of_years:
         year_list = []
         for row in range(len(dataframe)):
-            if dataframe.loc[row, 'Date'][4:] == x:
+            breakpoint()
+            if dataframe.loc[row, target][start:end] == x:
                 year_list.append(dataframe.loc[row, col])
         avg = sum(year_list) / len(year_list)
+        return_list.append(avg)
+    return return_list
+
+
+def avg_things(city_list: Optional[list[float]], house_list: list[float]) -> list[float]:
+    """
+    Return a list of values from the two datasets provided.
+
+    Preconditions:
+        - len(city_list) == len(house_list)
+
+    >>> city = test('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+              ['Date', 'Single_Family_Benchmark_SA'])
+    >>> city = cleans_nan(city)
+    >>> city_list = condense_time_manya(city, ['2015', '2016', '2017', '2018', '2019', \
+              '2020'], 'Single_Family_Benchmark_SA', 'Date')
+
+    >>> type_of_house = 'Total (house and land)'
+    >>> house = test('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
+                'New housing price indexes', 'VALUE'])
+    >>> house = sort_file(house, {type_of_house}, 'New housing price indexes')
+    >>> house = cleans_nan(house)
+    >>> house_list = condense_time_manya(house, ['2015', '2016', '2017', '2018', '2019', \
+                '2020'], 'VALUE', 'REF_DATE')
+
+    >>> house_land_avg = avg_things(city_list, house_list)
+    """
+    return_list = []
+    for i in range(len(city_list)):
+        s = city_list[i] + house_list[i]
+        avg = s / 2
         return_list.append(avg)
     return return_list
 
