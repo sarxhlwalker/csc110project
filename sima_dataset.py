@@ -83,7 +83,7 @@ def condense_time_sima(dictionary: dict) -> list[float]:
     return_list = []
     count = 0
     that_year = []
-    for key, value in dictionary.items():
+    for _, value in dictionary.items():
         if count % 11 == 0 and count > 1:
             return_list.append(round(sum(that_year) / 11, 1))
             that_year = []
@@ -97,7 +97,7 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
                                                         dict[tuple[str, str, str], float]]]) -> \
         list[dict[str, tuple[list[float], list[float], list[float]]]]:
     """
-    Implement consense_time_sima.
+    Implement condense_time_sima.
     """
     cities = []
     for city in split_type_for_cities:

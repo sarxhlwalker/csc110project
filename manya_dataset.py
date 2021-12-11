@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def cleans_nan(dataframe):
-    """Removes random commas.
+    """Removes random commas in Manya's dataframes.
 
     >>> file = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_HPI_SA'])
@@ -15,7 +15,7 @@ def cleans_nan(dataframe):
 def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) \
         -> list[float]:
     """
-    Create a copy of a dataframe such that Date is the span of one year, and Single_Family_HPI_SA is
+    Create a copy of one of Manya's dataframes such that Date is the span of one year, and Single_Family_HPI_SA is
     adjusted accordingly.
 
     >>> file = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \

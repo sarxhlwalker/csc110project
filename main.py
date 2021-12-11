@@ -3,6 +3,7 @@ import classes
 import sarah_dataset
 import manya_dataset
 import sima_dataset
+import plotting
 
 # TODO:
 # - Deal with COVID-19 Data
@@ -52,7 +53,7 @@ CITIES_SIMA = ['Kitchener-Cambridge-Waterloo, Ontario',
 
 def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     """
-    Do the thing!
+    Create a list of City instances so that we can plot their values.
     """
     year = [2016, 2017, 2018, 2019, 2020]
 
@@ -136,7 +137,8 @@ def sort_file(dataframe, keywords: set[str], column: str):
 
 def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]:
     """
-    Return a list of values from the two datasets provided.
+    Return a list of average values from Manya's Single Family HPI values and Sima's HPI value.
+    This is for one specific city only.
 
     Preconditions:
         - len(city_list) == len(house_list)

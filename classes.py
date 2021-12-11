@@ -31,7 +31,8 @@ class City:
 
 def moncton_and_fredericton(city_list: list[City]) -> list[City]:
     """
-    Combine the Moncton and Fredericton City instances because we have data overlap.
+    Combine the Moncton and Fredericton City instances because we have data overlap in Manya and
+    Sima's data.
     """
     new_list = []
     moncton = city_list[0]  # because pycharm hates me
