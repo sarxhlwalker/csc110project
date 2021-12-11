@@ -18,7 +18,7 @@ def split_type_sarah(dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     return inter, intra
 
 
-def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> list:
+def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> tuple[list, list]:
     """
     Return the restriction of the data from split_file to the data only pertaining to city. No more
     computations are needed on Sarah's dataset, so this returns a list, ready for input to Class
@@ -35,17 +35,17 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     >>> st_john_inter, st_john_intra = restrict_city_sarah(inter, intra, \
                 'Saint John (CMA), New Brunswick')
     """
-    lst = []
-
+    city_inter = []
+    city_intra = []
     for _, row in inter.iterrows():
         if row.loc['GEO'] == city:
-            lst.append(row.loc['VALUE'])
+            city_inter.append(row.loc['VALUE'])
 
     for _, row in intra.iterrows():
         if row.loc['GEO'] == city:
-            lst.append(row.loc['VALUE'])
+            city_intra.append(row.loc['VALUE'])
 
-    return lst
+    return city_inter, city_intra
 
 
 if __name__ == '__main__':

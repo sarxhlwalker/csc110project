@@ -29,5 +29,37 @@ class City:
         self.land_avg = land_avg
 
 
+def moncton_and_fredericton(city_list: list[City]) -> list[City]:
+    """
+    Combine the Moncton and Fredericton City instances because we have data overlap.
+    """
+    new_list = []
+    moncton = city_list[0]  # because pycharm hates me
+    fredricton = city_list[1]   # because pycharm hates me pt 2
+    for city in city_list:
+        if city.name != 'Greater Moncton' and city.name != 'Fredricton':
+            new_list.append(city)
+        elif city.name == 'Greater Moncton':
+            moncton = city
+        elif city.name == 'Fredricton':
+            fredricton = city
+
+    name = 'Greater Moncton and Fredricton'
+    year = moncton.year
+    inter = []
+    intra = []
+    comp = []
+    house = []
+    land = []
+    for i in range(5):
+        inter.append(moncton.interprovincial[i] + fredricton.interprovincial[i])
+        intra.append(moncton.intraprovincial[i] + fredricton.intraprovincial[i])
+        comp.append(moncton.house_land_avg[i] + fredricton.house_land_avg[i])
+        house.append(moncton.house_avg[i] + fredricton.house_avg[i])
+        land.append(moncton.land_avg[i] + fredricton.land_avg[i])
+    new_list.append(City(name, year, inter, intra, comp, house, land))
+    return new_list
+
+
 if __name__ == '__main__':
     pass

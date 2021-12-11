@@ -6,7 +6,8 @@ import sima_dataset
 
 # TODO:
 # - Create a run_simulation function that calls all the functions that we made in the order that we
-#     want the TA's to run it in. implement CITY_DICT in run_simulation()
+#     want the TA's to run it in.
+# - Condense Moncton and Fredricton into one city.
 # - Deal with COVID-19 Data
 # - instead of pass in if __main__, put run_simulation()
 # - add pythonta to if __main__
@@ -17,29 +18,54 @@ import sima_dataset
 # CITY_DICT maps Manya's city names to a list of first Sarah's and then Sima's city names.
 
 CITY_DICT = {'Cambridge': ['Kitchener - Cambridge - Waterloo (CMA), Ontario',
-                           'Kitchener-Cambridge-Waterloo, Ontario'], 'Fredricton':
-                 ['Fredericton (CA), New Brunswick', 'Saint John, Fredericton, and Moncton, New Brunswick'],
+                           'Kitchener-Cambridge-Waterloo, Ontario'],
+             'Fredricton':
+                 ['Fredericton (CA), New Brunswick',
+                  'Saint John, Fredericton, and Moncton, New Brunswick'],
              'Greater Moncton':
-                 ['Moncton (CMA), New Brunswick', "St. John's, Newfoundland and Labrador"],
-             'Greater Toronto': ['Toronto (CMA), Ontario', 'Toronto, Ontario'], 'Greater Vancouver':
+                 ['Moncton (CMA), New Brunswick',
+                  'Saint John, Fredericton, and Moncton, New Brunswick'],
+             'Greater Toronto': ['Toronto (CMA), Ontario', 'Toronto, Ontario'],
+             'Greater Vancouver':
                  ['Vancouver (CMA), British Columbia', 'Vancouver, British Columbia'],
              'Kitchener and Waterloo':
                  ['Kitchener - Cambridge - Waterloo (CMA), Ontario',
                   'Kitchener-Cambridge-Waterloo, Ontario'],
-             'London St Thomas': ['London (CMA), Ontario', 'London, Ontario'], 'Montreal CMA':
-                 ['Montréal (CMA), Quebec', 'Montréal, Quebec'], 'Niagara Region':
+             'London St Thomas': ['London (CMA), Ontario', 'London, Ontario'],
+             'Montreal CMA':
+                 ['Montréal (CMA), Quebec', 'Montréal, Quebec'],
+             'Niagara Region':
                  ['St. Catharines - Niagara (CMA), Ontario', 'St. Catharines-Niagara, Ontario'],
-             'Quebec CMA': ['Québec (CMA), Quebec', 'Québec, Quebec'], 'Saint John':
+             'Quebec CMA': ['Québec (CMA), Quebec', 'Québec, Quebec'],
+             'Saint John':
                  ['Saint John (CMA), New Brunswick', "St. John's, Newfoundland and Labrador"],
              'Victoria': ['Victoria (CMA), British Columbia', 'Victoria, British Columbia']}
+
+CITIES_SIMA = ['Kitchener-Cambridge-Waterloo, Ontario',
+               'Saint John, Fredericton, and Moncton, New Brunswick',
+               "St. John's, Newfoundland and Labrador",
+               'Toronto, Ontario', 'Vancouver, British Columbia',
+               'Kitchener-Cambridge-Waterloo, Ontario',
+               'London, Ontario',
+               'Montréal, Quebec',
+               'St. Catharines-Niagara, Ontario',
+               'Québec, Quebec',
+               "St. John's, Newfoundland and Labrador",
+               'Victoria, British Columbia']
+
 
 def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     """
     Do the thing!
     """
-    # TODO: call sima's functions on sima.
-
     year = [2016, 2017, 2018, 2019, 2020]
+
+    adjusted_values = \
+        sima_dataset.adjust_sima_hpi(pd.read_csv(sima))
+    restricted_cities = sima_dataset.restrict_city_sima(adjusted_values, CITIES_SIMA)
+    split_type_for_cities = sima_dataset.split_type_sima(restricted_cities)
+    condensed = sima_dataset.run_condense_time(split_type_for_cities)
+    sima_dataset.append_sima_csv(condensed)
 
     sar = read_file(sarah, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
@@ -56,15 +82,27 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
         clean_manya_city = manya_dataset.cleans_nan(manya_city)
         timed_manya_city = manya_dataset.condense_time_manya(clean_manya_city, manya_year)
 
-        # TODO: Average timed_manya_city with whatever we get from Sima's dataset.
+        house_land_avg = []
+        house = []
+        land = []
+
+        for item in condensed:
+            for single_key in item:
+                if single_key == CITY_DICT[key][1]:
+                    house = item[single_key][0]
+                    land = item[single_key][1]
+                    comp = item[single_key][2]
+
+                    house_land_avg = avg_datasets(timed_manya_city, comp)
+
+                    break
 
         city_inter, city_intra = sarah_dataset.restrict_city_sarah(inter, intra, CITY_DICT[key][0])
 
-        # TODO: this method of initializing cities won't work.
+        city_list.append(classes.City(key, year, city_inter,
+                                      city_intra, house_land_avg, house, land))
 
-        city_list.append(classes.City(key, year, city_inter, city_intra, tot_avg, house_only,
-                                    land_only))
-
+    city_list = classes.moncton_and_fredericton(city_list)
     return city_list
 
 
@@ -107,17 +145,8 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
     Preconditions:
         - len(city_list) == len(house_list)
 
-    >>> city = read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
-              ['Date', 'Single_Family_HPI_SA'])
-    >>> city = manya_dataset.cleans_nan(city)
-    >>> city_list = manya_dataset.condense_time_manya(city, ['2015', '2016', '2017', '2018', '2019'], \
-                                        'Single_Family_HPI_SA')
+    TODO: Doctest
 
-    >>> house = read_file('Data Sets/House and Land Prices.csv', ['REF_DATE', 'GEO', \
-                'New housing price indexes', 'VALUE'])
-    TODO: Sima's thing.
-
-    >>> house_land_avg = avg_datasets(city_list, house_list)
     """
     return_list = []
     for i in range(len(city_list)):
@@ -128,7 +157,7 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
 
 
 if __name__ == '__main__':
-    sima = 'Data Sets/Housing in 6 Major Cities.csv'
+    sima = 'Data Sets/House and Land Prices.csv'
     sarah = 'Data Sets/city migration and others.csv'
     manya = {'Cambridge':
                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
@@ -157,4 +186,4 @@ if __name__ == '__main__':
 
     # TODO: include COVID-19 data.
 
-    create_cities(sima, sarah, manya)
+    city_list = create_cities(sima, sarah, manya)
