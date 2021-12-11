@@ -5,11 +5,7 @@ import manya_dataset
 import sima_dataset
 
 # TODO:
-# - Create a run_simulation function that calls all the functions that we made in the order that we
-#     want the TA's to run it in.
-# - Condense Moncton and Fredricton into one city.
 # - Deal with COVID-19 Data
-# - instead of pass in if __main__, put run_simulation()
 # - add pythonta to if __main__
 # - finish plotting
 # - make website
