@@ -64,20 +64,26 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     condensed = sima_dataset.run_condense_time(split_type_for_cities)
     sima_dataset.append_sima_csv(condensed)
 
+    # Above prepares Sima's dataset into a dictionary with one key (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI, and the total house and land HPI.
+
     sar = read_file(sarah, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
     sorted_sar = sort_file(sar, {'Net interprovincial migration',
-                            'Net intraprovincial migration'}, 'Components of population growth')
+                                 'Net intraprovincial migration'}, 'Components of population growth')
     inter, intra = sarah_dataset.split_type_sarah(sorted_sar)
+
+    # Above returns two DataFrames: one for every relevant city's net interprovincial migration value and one for every relevant city's intraprovincial migration.
 
     manya_year = ['2015', '2016', '2017', '2018', '2019']
 
-    city_list = []
+    city_list = []  # Accumulator for classes.City instances
 
-    for key in CITY_DICT:
+    for key in CITY_DICT:  # for each relevant city
         manya_city = read_file(manya[key], ['Date', 'Single_Family_HPI_SA'])
         clean_manya_city = manya_dataset.cleans_nan(manya_city)
         timed_manya_city = manya_dataset.condense_time_manya(clean_manya_city, manya_year)
+
+        # Above returns a list of five years' worth of the city's Single Family SA HPI.
 
         house_land_avg = []
         house = []
@@ -85,26 +91,52 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
 
         for item in condensed:
             for single_key in item:
-                if single_key == CITY_DICT[key][1]:
+                if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from Sima's dataset
                     house = item[single_key][0]
                     land = item[single_key][1]
                     comp = item[single_key][2]
 
+                    # Above acquires the relevant information from the dictionary to call house_land_avg
+
                     house_land_avg = avg_datasets(timed_manya_city, comp)
 
-                    break
+                    break  # EW EW EW EW --
+                    # THIS IS JUST TO SAVE TIME!!! it doesn't actually do anything else.
+                    # ALSO i asked on piazza if the way i used it here is ok so we'll have to see <3
+
+                    # We have acquired all the information we need from the loop(s),
+                    # so we can safely break to save time.
 
         city_inter, city_intra = sarah_dataset.restrict_city_sarah(inter, intra, CITY_DICT[key][0])
+
+        # Above returns a five-item list of the city's interprovincial and intraprovincial values.
 
         city_list.append(classes.City(key, year, city_inter,
                                       city_intra, house_land_avg, house, land))
 
+        # Creates a classes.City instance and appends to city_list
+
     city_list = classes.moncton_and_fredericton(city_list)
-    return city_list
+
+    # Above combines the Moncton and Fredericton classes.City instance into one City,
+    # because we had data overlap.
+
+    return city_list  # Returns list of all classes.City instances we have data for
 
 
 def plot_things(city_list: list) -> None:
-    """Now the actual plotting."""
+    """Now the actual plotting.
+
+    TODO: Basically after plotting.plot_hpi and plotting.plot_migration are functioning,
+    TODO cont'd: we want to call plot_things on the list returned by create_cities
+
+    This function should:
+      - go through every item in city_list
+      - call plotting.plot_migration
+      - call plotting.plot_hpi
+      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each city should have 2 graphs) and stored in a folder specifically for plots
+      - plot the COVID data
+    """
 
 
 def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
@@ -185,3 +217,15 @@ if __name__ == '__main__':
     # TODO: include COVID-19 data.
 
     city_list = create_cities(sima, sarah, manya)
+
+    # TODO: plot_things(city_list)
+    #
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset', 'sima_dataset'],
+    #     # the names (strs) of imported modules
+    #     # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 100,
+    #     'disable': ['R1705', 'C0200']
+    # })

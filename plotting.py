@@ -30,24 +30,18 @@ def plot_hpi(city) -> None:
 
     palette = palettes.viridis(6)
     colours = [palette[2], palette[3], palette[4]]
-    data = {'years': city.year, \
-            2016: city.year[0], \
-            2017: city.year[1], \
-            2018: city.year[2], \
-            2019: city.year[3], \
-            2020: city.year[4]}
 
-    # TODO: there is an issue with x_range.
+    y_axis = ['Total (house and land)', 'House only', 'Land only']
 
-    p = plotting.figure(x_range=city.year, height=250, title=(city.name + ' HPI'))
-    p.vbar_stack(city.year, x='years', width=0.9, color=colours, source=data,
-                 legend_label=city.year)
+    data = {'years': ['2016', '2017', '2018', '2019', '2020'],
+            'Total (house and land)': [x for x in city.house_land_avg],
+            'House only': [x for x in city.house_avg],
+            'Land only': [x for x in city.land_avg]}
 
-    # p.y_range.start = 0
-    # p.x_range.range_padding = 0.1
-    # p.xgrid.grid_line_color = None
-    # p.axis.minor_tick_line_color = None
-    # p.outline_line_color = None
+    p = plotting.figure(x_range=[str(x) for x in city.year], title=(city.name + ' HPI'))
+    p.vbar_stack(y_axis, x='years', width=0.9, source=data, fill_color=colours,
+                 legend_label=[x for x in y_axis])
+
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 

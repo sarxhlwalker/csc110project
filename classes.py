@@ -4,17 +4,18 @@ import sarah_dataset
 import sima_dataset
 import datetime
 
+
 class City:
     """"
     A class to contain all the necessary information for one city.
     """
     name: str
     year: list[int]
-    intraprovincial: list[int]      # sarah
-    interprovincial: list[int]      # sarah
-    house_land_avg: list[float]     # manya and sima
-    house_avg: list[float]          # sima
-    land_avg: list[float]           # sima
+    intraprovincial: list[int]  # sarah
+    interprovincial: list[int]  # sarah
+    house_land_avg: list[float]  # manya and sima
+    house_avg: list[float]  # sima
+    land_avg: list[float]  # sima
 
     def __init__(self, name: str, year: list[int],
                  intraprovincial: list[int], interprovincial: list[int],
@@ -36,7 +37,7 @@ def moncton_and_fredericton(city_list: list[City]) -> list[City]:
     """
     new_list = []
     moncton = city_list[0]  # because pycharm hates me
-    fredricton = city_list[1]   # because pycharm hates me pt 2
+    fredricton = city_list[1]  # because pycharm hates me pt 2
     for city in city_list:
         if city.name != 'Greater Moncton' and city.name != 'Fredricton':
             new_list.append(city)

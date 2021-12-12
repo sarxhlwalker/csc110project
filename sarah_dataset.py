@@ -24,9 +24,6 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     computations are needed on Sarah's dataset, so this returns a list, ready for input to class
     City.
 
-    Preconditions:
-        - len(inter) == len(intra)
-
     >>> city_migration = main.read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     >>> city_migration = main.sort_file(city_migration,{'Net interprovincial migration', \
@@ -38,12 +35,15 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     city_inter = []
     city_intra = []
     for _, row in inter.iterrows():
+        # iterrows() returns  each row in a tuple of the form (index, Series)
         if row.loc['GEO'] == city:
             city_inter.append(row.loc['VALUE'])
+        # gets only the values that correspond with the given city
 
     for _, row in intra.iterrows():
         if row.loc['GEO'] == city:
             city_intra.append(row.loc['VALUE'])
+    # repeats the same thing for intra dataframe
 
     return city_inter, city_intra
 
