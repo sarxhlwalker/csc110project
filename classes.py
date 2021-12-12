@@ -16,11 +16,12 @@ class City:
     house_land_avg: list[float]  # manya and sima
     house_avg: list[float]  # sima
     land_avg: list[float]  # sima
+    province: str
 
     def __init__(self, name: str, year: list[int],
                  intraprovincial: list[int], interprovincial: list[int],
                  house_land_avg: list[float], house_avg: list[float],
-                 land_avg: list[float]) -> None:
+                 land_avg: list[float], province: str) -> None:
         self.name = name
         self.year = year
         self.intraprovincial = intraprovincial
@@ -28,6 +29,7 @@ class City:
         self.house_land_avg = house_land_avg
         self.house_avg = house_avg
         self.land_avg = land_avg
+        self.province = province
 
 
 def moncton_and_fredericton(city_list: list[City]) -> list[City]:
@@ -59,8 +61,23 @@ def moncton_and_fredericton(city_list: list[City]) -> list[City]:
         comp.append(moncton.house_land_avg[i] + fredricton.house_land_avg[i])
         house.append(moncton.house_avg[i] + fredricton.house_avg[i])
         land.append(moncton.land_avg[i] + fredricton.land_avg[i])
-    new_list.append(City(name, year, inter, intra, comp, house, land))
+    new_list.append(City(name, year, inter, intra, comp, house, land, moncton.province))
     return new_list
+
+
+class Province:
+    """
+    A class to store province data.
+
+    """
+    name: str
+    city_list: list[City]
+    covid_cases: list[int]
+
+    def __init__(self, name: str, city_list: list[City], covid_cases: list[int]) -> None:
+        self.name = name
+        self.city_list = city_list
+        self.covid_cases = covid_cases
 
 
 if __name__ == '__main__':
