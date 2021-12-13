@@ -1,3 +1,10 @@
+"""
+
+Final Project
+
+
+"""
+
 import pandas as pd
 import classes
 import covid_dataset
@@ -5,15 +12,6 @@ import sarah_dataset
 import manya_dataset
 import sima_dataset
 import plotting
-
-# TODO:
-# - Deal with COVID-19 Data
-# - Write plots to a separate folder
-# - Make Province classes and plot those
-# - Write function to write website html file
-# - add pythonta to if __main__
-# - finish plotting
-
 
 # GENERAL VARIABLES FOR MAIN.PY
 
@@ -58,29 +56,33 @@ CITIES_SIMA = ['Kitchener-Cambridge-Waterloo, Ontario',
 SIMA_FILE = 'Data Sets/House and Land Prices.csv'
 SARAH_FILE = 'Data Sets/city migration and others.csv'
 MANYA_FILES = {'Cambridge':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
-              'Fredricton':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Fredricton.csv',
-              'Greater Moncton':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater Moncton.csv',
-              'Greater Toronto':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater Toronto.csv',
-              'Greater Vancouver':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater Vancouver.csv',
-              'Kitchener and Waterloo':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Kitchener and Waterloo.csv',
-              'London St Thomas':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted London St Thomas.csv',
-              'Montreal CMA':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Montreal CMA.csv',
-              'Niagara Region':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Niagara Region.csv',
-              'Quebec CMA':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Quebec CMA.csv',
-              'Saint John':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv',
-              'Victoria':
-                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Victoria.csv'}
+               'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
+               'Fredricton':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Fredricton.csv',
+               'Greater Moncton':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater Moncton.csv',
+               'Greater Toronto':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater '
+                   'Toronto.csv',
+               'Greater Vancouver':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater '
+                   'Vancouver.csv',
+               'Kitchener and Waterloo':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Kitchener '
+                   'and Waterloo.csv',
+               'London St Thomas':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted London '
+                   'St Thomas.csv',
+               'Montreal CMA':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Montreal CMA.csv',
+               'Niagara Region':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Niagara Region.csv',
+               'Quebec CMA':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Quebec CMA.csv',
+               'Saint John':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv',
+               'Victoria':
+                   'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Victoria.csv'}
 
 
 # MAIN FUNCTIONS (CALLED IN IF __MAIN__)
@@ -105,7 +107,8 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     sar = read_file(sarah, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
     sorted_sar = sort_file(sar, {'Net interprovincial migration',
-                                 'Net intraprovincial migration'}, 'Components of population growth')
+                                 'Net intraprovincial migration'},
+                           'Components of population growth')
     inter, intra = sarah_dataset.split_type_sarah(sorted_sar)
 
     # Above returns two DataFrames: one for every relevant city's net interprovincial migration
@@ -269,8 +272,6 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
 
 
 if __name__ == '__main__':
-    # TODO: make this nicer (fewer function calls)
-
     city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
     city_migration, city_hpi, provinces = plot_cities(city_list)
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)

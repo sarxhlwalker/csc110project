@@ -1,8 +1,6 @@
 import bokeh.plotting as plot
 import bokeh.palettes as palettes
 from bokeh.layouts import row
-import main
-import classes
 
 
 def plot_migration(city) -> plot.figure:
