@@ -1,3 +1,19 @@
+"""
+CSC110: Final Project
+
+This file contains functions that relates to the 'city migration and others' dataset.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+.l
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
+"""
+
 import main
 import pandas as pd
 

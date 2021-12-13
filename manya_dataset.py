@@ -1,3 +1,19 @@
+"""
+CSC110: Final Project
+
+This file contains all the functions that relate to Housing Prices Dataset (MLS).
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
+"""
+
 import main
 import pandas as pd
 
@@ -12,11 +28,10 @@ def cleans_nan(dataframe):
     return dataframe.dropna()
 
 
-def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) \
-        -> list[float]:
+def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) -> list[float]:
     """
-    Create a copy of one of Manya's dataframes such that Date is the span of one year, and Single_Family_HPI_SA is
-    adjusted accordingly.
+    Create a copy of one of Manya's dataframes such that Date is the span of one year,
+     and Single_Family_HPI_SA is adjusted accordingly.
 
     >>> file = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_HPI_SA'])

@@ -1,16 +1,17 @@
 """
 CSC110: Final Project
 
+This file contains functions that plot all of our data.
+
 Copyright and Usage Information
 ===============================
 
-This file is provided solely for the personal and private use of students
-taking CSC110 at the University of Toronto St. George campus. All forms of
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
 distribution of this code, whether as given or with any changes, are
-expressly prohibited. For more information on copyright for CSC110 materials,
-please consult our Course Syllabus.
+expressly prohibited.
 
-This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
 
 from bokeh import plotting as plot

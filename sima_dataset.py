@@ -1,6 +1,19 @@
 """
-All functions that have to do with Sima's Dataset.
+CSC110: Final Project
+
+This file contains functions that relates to the 'House and Land Prices' dataset.
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited.
+
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
+
 import main
 import pandas as pd
 
@@ -87,7 +100,7 @@ def condense_time_sima(dictionary: dict) -> list[float]:
     return_list = []
     count = 0
     that_year = []
-    for key, value in dictionary.items():
+    for _, value in dictionary.items():
         if count % 11 == 0 and count > 1:
             return_list.append(round(sum(that_year) / 11, 1))
             that_year = []

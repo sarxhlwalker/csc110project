@@ -1,24 +1,24 @@
 """
 CSC110: Final Project
 
+This file contains functions that extract data from the dataset with covid-19 statistics.
+
 Copyright and Usage Information
 ===============================
 
-This file is provided solely for the personal and private use of students
-taking CSC110 at the University of Toronto St. George campus. All forms of
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
 distribution of this code, whether as given or with any changes, are
-expressly prohibited. For more information on copyright for CSC110 materials,
-please consult our Course Syllabus.
+expressly prohibited.
 
-This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
-
 
 import pandas as pd
 
 
 def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
-    """ return a dictionary mapping all the provinces in provinces to the corresponding
+    """Returns a dictionary mapping all the provinces in provinces to the corresponding
     total number of corresponding covid cases during 2015 to June 2020"""
     covid_file = pd.read_csv('Data Sets/covid19-download.csv')
     c_reversed = reversed(covid_file.index)
@@ -34,7 +34,7 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
 
 def get_covid_case_value(province: str, covid_file: pd.DataFrame,
                          c_reversed: reversed) -> list[int]:
-    """ return a list of integers that represents the total covid cases during 2015 to June 2020
+    """Returns a list of integers that represents the total covid cases during 2015 to June 2020
     for the corresponding province"""
     cases_list = [0, 0, 0, 0]  # initializes a list with 4 zeros corresponding to the covid
     # cases for years 2015/2016, 2016/2017, 2017/2018, 2018/2019

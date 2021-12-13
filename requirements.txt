@@ -1,11 +1,11 @@
 # CSC110 Project: Python libraries we'll be using in our project.
 
 # Dataset Analysis
-pandas
+pandas==1.3.4
 
 
 # Testing and code checking
 python-ta
 
 # Graphics and data visualization
-bokeh
+bokeh==2.4.2

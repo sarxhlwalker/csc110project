@@ -1,20 +1,39 @@
 """
 CSC110: Final Project
 
+This file contains the main City class and Province class.
+It also contains a function that combines some overlapping data in our datasets.
+
 Copyright and Usage Information
 ===============================
 
-This file is provided solely for the personal and private use of students
-taking CSC110 at the University of Toronto St. George campus. All forms of
+This file is provided solely for the personal and private use of professors and TAs
+at the University of Toronto St. George campus. All forms of
 distribution of this code, whether as given or with any changes, are
-expressly prohibited. For more information on copyright for CSC110 materials,
-please consult our Course Syllabus.
+expressly prohibited.
 
-This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
+
+
 class City:
     """"
     A class to contain all the necessary information for one city.
+
+    Instance Attributes:
+     - name: the name of the city
+     - year: the years that we are considering (2015, 2016, 2017, 2018, 2019)
+     - intraprovincial: the number of people travelling within the city
+     - interprovincial: the number of people in and out of the city
+     - house_land_avg: the average HPI value of house and land combined
+     - house_avg: the HPI value of only houses
+     - land_avg: the HPI value of only the land
+     - province: the province that the city is in
+
+    Representation Invariants:
+        - self.name != ''
+        - all(x in {2015, 2016, 2017, 2018, 2019} for x in self.year)
+        # TODO: add more representation invariants?
     """
     name: str
     year: list[int]
@@ -76,6 +95,14 @@ class Province:
     """
     A class to store province data.
 
+    Instance Attributes:
+        - name: the name of the province
+        - city_list: a list of all the cities in the province
+        - covid_cases: a list of the covid cases in each city in the province
+        # TODO: check this
+
+    Representation Invariants:
+        - self.name != ''
     """
     name: str
     city_list: list[City]
