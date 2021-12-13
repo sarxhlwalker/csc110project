@@ -99,23 +99,111 @@ MANYA_FILES = {'Cambridge':
 
 # MAIN FUNCTIONS (CALLED IN IF __MAIN__)
 
-def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
+def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.City]:
     """
     Create a list of City instances so that we can plot their values.
     """
-    year = [2016, 2017, 2018, 2019, 2020]
+    condensed = create_sima(sima)  # Above prepares Sima's dataset into a dictionary with one key
+    # (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI,
+    # and the total house and land HPI.
 
-    adjusted_values = \
-        sima_dataset.adjust_sima_hpi(pd.read_csv(sima))
+    inter, intra = create_sarah(sarah)  # Returns two DataFrames: one for every relevant city's net
+    # interprovincial migration value and one for every relevant city's intraprovincial migration.
+
+    city_accumulator = []  # Accumulator for classes.City instances
+
+    for key in CITY_DICT:  # for each relevant city
+
+        timed_manya_city = create_manya(manya, key, ['2015', '2016', '2017', '2018', '2019'])
+        # Returns a list of five years' worth of the city's Single Family SA HPI.
+
+        house, land, house_land_avg = create_items(condensed, key, timed_manya_city)  # Returns
+        # relevant information from Sima's dataset for this specific city.
+
+        province = get_province(key)  # Retrieves the province attribute for the city.
+
+        city_inter, city_intra = sarah_dataset.restrict_city_sarah(inter, intra, CITY_DICT[key][0])
+        # Returns a five-item list of the city's interprovincial and intraprovincial values.
+
+        city_accumulator.append(classes.City(key, [2016, 2017, 2018, 2019, 2020], city_inter,
+                                city_intra, house_land_avg, house, land, province))  # Creates a
+        # classes.City instance and appends to city_accumulator
+
+    city_accumulator = classes.moncton_and_fredericton(city_accumulator)  # Combines the Moncton and
+    # Fredericton classes.City instance into one City, because we had data overlap.
+
+    return city_accumulator  # Returns list of all classes.City instances we have data for
+
+
+def plot_cities(city_accumulator: list) -> set[str]:
+    """Now the actual plotting.
+
+    This function should:
+      - go through every item in city_accumulator
+      - call plotting.plot_migration
+      - call plotting.plot_hpi
+      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each
+      city should have 2 graphs) and stored in a folder specifically for plots
+      - plot the COVID data
+    """
+    for city in city_accumulator:
+        plotting.plot_migration(city)
+        plotting.plot_hpi(city)
+    return {specific_city.province for specific_city in city_accumulator}
+
+
+def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) -> \
+        list[classes.Province]:
+    """
+    Create a list of Province instances so we can plot their values.
+    """
+    prov_accumulator = []
+    for province in covid_cases:
+        covid_nums = covid_cases[province]
+        cities = []
+        for city in city_accumulator:
+            if city.province == province:
+                cities.append(city)
+        prov_accumulator.append(classes.Province(province, cities, covid_nums))
+    return prov_accumulator
+
+
+def plot_provinces(prov_accumulator: list) -> None:
+    """
+    Plot a number of graphs juxtaposing the values from each city in a shared province against
+    each other and the number of COVID cases in that province.
+    """
+    for prov in prov_accumulator:
+        plotting.plot_interprovincial(prov, 500)  # Can change these 500s to any other integer;
+        # only scales COVID case numbers. Picked 500 because it makes the graphs look the best.
+        plotting.plot_intraprovincial(prov, 500)
+        plotting.plot_tot_hpi(prov, 500)
+        plotting.plot_house_hpi(prov, 500)
+        plotting.plot_land_hpi(prov, 500)
+
+
+# HELPER FUNCTIONS FOR MAIN FUNCTIONS
+
+def create_sima(sima: str) -> list:
+    """
+    Helper function for create_cities. Prepares Sima's dataset into a dictionary with one key
+    (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI,
+    and the total house and land HPI.
+    """
+    adjusted_values = sima_dataset.adjust_sima_hpi(pd.read_csv(sima))
     restricted_cities = sima_dataset.restrict_city_sima(adjusted_values, CITIES_SIMA)
     split_type_for_cities = sima_dataset.split_type_sima(restricted_cities)
     condensed = sima_dataset.run_condense_time(split_type_for_cities)
     sima_dataset.append_sima_csv(condensed)
+    return condensed
 
-    # Above prepares Sima's dataset into a dictionary with one key (being a city) mapping to three
-    # lists of floats: five years of house only HPI, land only HPI, and the total house
-    # and land HPI.
 
+def create_sarah(sarah: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Helper function for create_cities. Prepares Sarah's dataset to return two DataFrames:
+    one for every relevant city's net interprovincial migration value and one for every relevant
+    city's intraprovincial migration.
+    """
     sar = read_file(sarah, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
     sorted_sar = sort_file(sar, {'Net interprovincial migration',
@@ -123,42 +211,27 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
                            'Components of population growth')
     inter, intra = sarah_dataset.split_type_sarah(sorted_sar)
 
-    # Above returns two DataFrames: one for every relevant city's net interprovincial migration
-    # value and one for every relevant city's intraprovincial migration.
+    return inter, intra
 
-    manya_year = ['2015', '2016', '2017', '2018', '2019']
 
-    city_accumulator = []  # Accumulator for classes.City instances
+def create_manya(manya: dict[str, str], key: str, manya_year: list) -> list[float]:
+    """
+    Helper function for create_cities. Returns a list of five years'
+    worth of the city's Single Family SA HPI.
+    """
+    manya_city = read_file(manya[key], ['Date', 'Single_Family_HPI_SA'])
+    clean_manya_city = manya_dataset.cleans_nan(manya_city)
+    timed_manya_city = manya_dataset.condense_time_manya(clean_manya_city, manya_year)
+    return timed_manya_city
 
-    for key in CITY_DICT:  # for each relevant city
-        manya_city = read_file(manya[key], ['Date', 'Single_Family_HPI_SA'])
-        clean_manya_city = manya_dataset.cleans_nan(manya_city)
-        timed_manya_city = manya_dataset.condense_time_manya(clean_manya_city, manya_year)
 
-        # Above returns a list of five years' worth of the city's Single Family SA HPI.
-
-        house, land, house_land_avg = create_items(condensed, key, timed_manya_city)
-
-        _, prov = CITY_DICT[key][0].split(',')
-        province = prov.strip()
-
-        # Above retrieves the province attribute for the city.
-
-        city_inter, city_intra = sarah_dataset.restrict_city_sarah(inter, intra, CITY_DICT[key][0])
-
-        # Above returns a five-item list of the city's interprovincial and intraprovincial values.
-
-        city_accumulator.append(classes.City(key, year, city_inter,
-                                city_intra, house_land_avg, house, land, province))
-
-        # Creates a classes.City instance and appends to city_accumulator
-
-    city_accumulator = classes.moncton_and_fredericton(city_accumulator)
-
-    # Above combines the Moncton and Fredericton classes.City instance into one City,
-    # because we had data overlap.
-
-    return city_accumulator  # Returns list of all classes.City instances we have data for
+def get_province(key: str) -> str:
+    """
+    Helper function for create_cities. Returns the province attribute for the city provided.
+    """
+    _, prov = CITY_DICT[key][0].split(',')
+    province = prov.strip()
+    return province
 
 
 def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
@@ -185,53 +258,8 @@ def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
 
     return house, land, house_land_avg
 
-
-def plot_cities(city_accumulator: list) -> set:
-    """Now the actual plotting.
-
-    This function should:
-      - go through every item in city_accumulator
-      - call plotting.plot_migration
-      - call plotting.plot_hpi
-      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each
-      city should have 2 graphs) and stored in a folder specifically for plots
-      - plot the COVID data
-    """
-    for city in city_accumulator:
-        plotting.plot_migration(city)
-        plotting.plot_hpi(city)
-    return {specific_city.province for specific_city in city_accumulator}
-
-
-def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) -> list:
-    """
-    Create a list of Province instances so we can plot their values.
-    """
-    prov_accumulator = []
-    for province in covid_cases:
-        covid_nums = covid_cases[province]
-        cities = []
-        for city in city_accumulator:
-            if city.province == province:
-                cities.append(city)
-        prov_accumulator.append(classes.Province(province, cities, covid_nums))
-    return prov_accumulator
-
-
-def plot_provinces(prov_accumulator: list) -> None:
-    """
-    Plot a number of graphs juxtaposing the values from each city in a shared province against
-    each other and the number of COVID cases in that province.
-    """
-    for prov in prov_accumulator:
-        plotting.plot_interprovincial(prov, 500)
-        plotting.plot_intraprovincial(prov, 500)
-        plotting.plot_tot_hpi(prov, 500)
-        plotting.plot_house_hpi(prov, 500)
-        plotting.plot_land_hpi(prov, 500)
-
-
 # HELPER FUNCTIONS THAT 2+ DATASETS USE. FOR SPECIFIC DATASET FUNCTIONS, SEE OTHER PYTHON FILES.
+
 
 def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     """
