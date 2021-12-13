@@ -1,26 +1,20 @@
+"""
+CSC110: Final Project
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC110 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC110 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+"""
+
+
 import pandas as pd
-
-
-# def get_canada_cases(dataframe: pd.DataFrame) -> list[int]:
-#     """
-#     # TODO: Add the doctest
-#     """
-#     canada_cases = []
-#     for _, row in dataframe.iterrows():
-#         # iterrows() returns  each row in a tuple of the form (index, Series)
-#         if row.loc['prname'] == 'Canada':
-#             canada_cases.append(row.loc['numconf'])
-#         # gets only the values that correspond with the Canada
-#     return canada_cases
-#
-#
-# def condense_time_covid(cases: list[int]) -> float:
-#     """
-#     # TODO: Add the doctest
-#     """
-#     return sum(cases) / len(cases)
-#     # the covid cases dataset only has values for 2020 so if we want to aggregate them,
-#     # just take the average of all of them
 
 
 def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
@@ -38,7 +32,8 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
     return province_to_covid_cases
 
 
-def get_covid_case_value(province: str, covid_file: pd.DataFrame, c_reversed: reversed) -> list[int]:
+def get_covid_case_value(province: str, covid_file: pd.DataFrame,
+                         c_reversed: reversed) -> list[int]:
     """ return a list of integers that represents the total covid cases during 2015 to June 2020
     for the corresponding province"""
     cases_list = [0, 0, 0, 0]  # initializes a list with 4 zeros corresponding to the covid
@@ -52,3 +47,14 @@ def get_covid_case_value(province: str, covid_file: pd.DataFrame, c_reversed: re
             return cases_list
 
 
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })

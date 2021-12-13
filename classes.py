@@ -12,7 +12,6 @@ please consult our Course Syllabus.
 
 This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
 """
-
 class City:
     """"
     A class to contain all the necessary information for one city.
