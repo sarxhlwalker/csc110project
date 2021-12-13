@@ -13,15 +13,15 @@ expressly prohibited.
 
 This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
-
-import main
 import pandas as pd
 
 
-def cleans_nan(dataframe):
+def cleans_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
     """Removes random commas in Manya's dataframes.
 
-    >>> file = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+    >>> import main
+    >>> file = \
+    main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_HPI_SA'])
     >>> clean_file = cleans_nan(file)
     """
@@ -33,13 +33,13 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) -> l
     Create a copy of one of Manya's dataframes such that Date is the span of one year,
      and Single_Family_HPI_SA is adjusted accordingly.
 
-    >>> file = main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
+    >>> import main
+    >>> file = \
+    main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_HPI_SA'])
     >>> clean_file = cleans_nan(file)
     >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'], \
             'Single_Family_HPI_SA')
-
-    TODO: I think this doctest should expect a return??
     """
     return_list = []
     for x in range_of_years:
@@ -59,9 +59,9 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) -> l
     return return_list
 
 
-def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int):
+def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int) -> list:
     """
-    Iterates through the dataframe tweleve times and adds the data for each row into year_list.
+    Iterates through the dataframe twelve times and adds the data for each row into year_list.
     This will include the data from July in one year to June in the next year.
 
     Helper function for condense_time_manya.
@@ -72,4 +72,14 @@ def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int):
 
 
 if __name__ == '__main__':
-    pass
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['main', 'classes', 'covid_dataset', 'manya_dataset',
+                          'bokeh', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })

@@ -129,5 +129,5 @@ if __name__ == '__main__':
         # the names (strs) of imported modules
         # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
         'max-line-length': 100,
-        'disable': ['R1705', 'C0200']
+        'disable': ['R1705', 'C0200', 'R0902', 'R0913']
     })

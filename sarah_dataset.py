@@ -14,7 +14,6 @@ expressly prohibited.
 This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Grace Fung.
 """
 
-import main
 import pandas as pd
 
 
@@ -22,17 +21,17 @@ def split_type_sarah(dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     """
     Split city_migration data into two separate DataFrames; one for intraprovincial
     migration and the other for interprovincial.
-
+    >>> import main
     >>> file = main.read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     >>> sorted_file = main.sort_file(file, {'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
     >>> inter, intra = split_type_sarah(sorted_file)
     """
-    inter = dataframe[dataframe['Components of population growth'] ==
-                      'Net interprovincial migration']
-    intra = dataframe[dataframe['Components of population growth'] ==
-                      'Net intraprovincial migration']
+    inter = dataframe[dataframe['Components of population growth']
+                      == 'Net interprovincial migration']
+    intra = dataframe[dataframe['Components of population growth']
+                      == 'Net intraprovincial migration']
     return inter, intra
 
 
@@ -42,6 +41,7 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     computations are needed on Sarah's dataset, so this returns a list, ready for input to class
     City.
 
+    >>> import main
     >>> city_migration = main.read_file('Data Sets/city migration and others.csv', \
                 ['REF_DATE', 'GEO', 'Components of population growth', 'VALUE'])
     >>> city_migration = main.sort_file(city_migration,{'Net interprovincial migration', \
