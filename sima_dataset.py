@@ -110,7 +110,7 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
         city_key = ''
         for key, value in house.items():
             city_key = key[1]
-            break  # EW EW EW EW EW EW
+            # break  # EW EW EW EW EW EW
         individual_city[city_key] = (condense_time_sima(house), condense_time_sima(land), condense_time_sima(composite))
         cities.append(individual_city)
     return cities

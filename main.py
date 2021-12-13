@@ -98,8 +98,9 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     condensed = sima_dataset.run_condense_time(split_type_for_cities)
     sima_dataset.append_sima_csv(condensed)
 
-    # Above prepares Sima's dataset into a dictionary with one key (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI, and the total house and land HPI.
-    # breakpoint()
+    # Above prepares Sima's dataset into a dictionary with one key (being a city) mapping to three
+    # lists of floats: five years of house only HPI, land only HPI, and the total house
+    # and land HPI.
 
     sar = read_file(sarah, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
@@ -107,7 +108,8 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
                                  'Net intraprovincial migration'}, 'Components of population growth')
     inter, intra = sarah_dataset.split_type_sarah(sorted_sar)
 
-    # Above returns two DataFrames: one for every relevant city's net interprovincial migration value and one for every relevant city's intraprovincial migration.
+    # Above returns two DataFrames: one for every relevant city's net interprovincial migration
+    # value and one for every relevant city's intraprovincial migration.
 
     manya_year = ['2015', '2016', '2017', '2018', '2019']
 
@@ -169,7 +171,8 @@ def plot_cities(city_list: list) -> None:
       - go through every item in city_list
       - call plotting.plot_migration
       - call plotting.plot_hpi
-      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each city should have 2 graphs) and stored in a folder specifically for plots
+      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each
+      city should have 2 graphs) and stored in a folder specifically for plots
       - plot the COVID data
     """
     for city in city_list:
@@ -259,7 +262,7 @@ if __name__ == '__main__':
     # TODO: make this nicer (fewer function calls)
 
     city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
-    # plot_cities(city_list)
+    plot_cities(city_list)
     provinces = {city.province for city in city_list}
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
