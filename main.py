@@ -164,7 +164,7 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
     return city_list  # Returns list of all classes.City instances we have data for
 
 
-def plot_cities(city_list: list) -> None:
+def plot_cities(city_list: list) -> tuple[list, list, set]:
     """Now the actual plotting.
 
     This function should:
@@ -175,9 +175,13 @@ def plot_cities(city_list: list) -> None:
       city should have 2 graphs) and stored in a folder specifically for plots
       - plot the COVID data
     """
+    city_migration = []
+    city_hpi = []
     for city in city_list:
-        plotting.plot_migration(city)
-        plotting.plot_hpi(city)
+        city_migration.append(plotting.plot_migration(city))
+        city_hpi.append(plotting.plot_hpi(city))
+
+    return city_migration, city_hpi, {city.province for city in city_list}
 
 
 def create_provinces(city_list: list, covid_cases: dict[str, list[int]]) -> list:
@@ -195,17 +199,23 @@ def create_provinces(city_list: list, covid_cases: dict[str, list[int]]) -> list
     return prov_list
 
 
-def plot_provinces(prov_list: list) -> None:
+def plot_provinces(prov_list: list) -> tuple[list, list, list, list, list]:
     """
     Plot a number of graphs juxtaposing the values from each city in a shared province against
     each other and the number of COVID cases in that province.
     """
+    prov_intra = []
+    prov_inter = []
+    prov_hpi = []
+    prov_house = []
+    prov_land = []
     for prov in prov_list:
-        plotting.plot_interprovincial(prov, 500)
-        plotting.plot_intraprovincial(prov, 500)
-        plotting.plot_tot_hpi(prov, 500)
-        plotting.plot_house_hpi(prov, 500)
-        plotting.plot_land_hpi(prov, 500)
+        prov_inter.append(plotting.plot_interprovincial(prov, 500))
+        prov_intra.append(plotting.plot_intraprovincial(prov, 500))
+        prov_hpi.append(plotting.plot_tot_hpi(prov, 500))
+        prov_house.append(plotting.plot_house_hpi(prov, 500))
+        prov_land.append(plotting.plot_land_hpi(prov, 500))
+    return prov_inter, prov_intra, prov_hpi, prov_house, prov_land
 
 
 # HELPER FUNCTIONS THAT 2+ DATASETS USE. FOR SPECIFIC DATASET FUNCTIONS, SEE OTHER PYTHON FILES.
@@ -262,20 +272,22 @@ if __name__ == '__main__':
     # TODO: make this nicer (fewer function calls)
 
     city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
-    plot_cities(city_list)
-    provinces = {city.province for city in city_list}
+    city_migration, city_hpi, provinces = plot_cities(city_list)
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
-    plot_provinces(prov_list)
+    prov_inter, prov_intra, prov_hpi, prov_house, prov_land = plot_provinces(prov_list)
+    # plotting.plot_all(city_migration, city_hpi, prov_inter, prov_intra, prov_hpi, prov_house,
+    #                   prov_land)
 
     # TODO: sort out python_ta
 
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset', 'sima_dataset'],
-    #     # the names (strs) of imported modules
-    #     # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
-    #     'max-line-length': 100,
-    #     'disable': ['R1705', 'C0200']
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })
