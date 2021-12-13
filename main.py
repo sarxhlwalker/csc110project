@@ -229,7 +229,6 @@ def plot_provinces(prov_accumulator: list) -> None:
 
 # HELPER FUNCTIONS THAT 2+ DATASETS USE. FOR SPECIFIC DATASET FUNCTIONS, SEE OTHER PYTHON FILES.
 
-
 def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     """
     Save only the desired columns in lst from filename as a DataFrame.
