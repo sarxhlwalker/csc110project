@@ -102,6 +102,8 @@ MANYA_FILES = {'Cambridge':
 def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.City]:
     """
     Create a list of City instances so that we can plot their values.
+
+    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
     """
     condensed = create_sima(sima)  # Above prepares Sima's dataset into a dictionary with one key
     # (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI,
@@ -138,13 +140,17 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.
 def plot_cities(city_accumulator: list) -> set[str]:
     """Now the actual plotting.
 
-    This function should:
-      - go through every item in city_accumulator
-      - call plotting.plot_migration
-      - call plotting.plot_hpi
-      - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each
-      city should have 2 graphs) and stored in a folder specifically for plots
-      - plot the COVID data
+    This function runs through every item in city_accumulator, on which it calls
+    plotting.plot_migration and plotting.plot_hpi.
+
+    It returns a set of provinces from the list of cities such that the if __main__ block can easily
+    call create_provinces and plot_provinces.
+
+    Preconditions:
+        - city_accumulator != []
+
+    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> provs = plot_cities(city_accumulator)
     """
     for city in city_accumulator:
         plotting.plot_migration(city)
@@ -156,6 +162,15 @@ def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) 
         list[classes.Province]:
     """
     Create a list of Province instances so we can plot their values.
+
+    Preconditions:
+        - city_accumulator != []
+        - covid_cases != {}
+
+    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> provs = plot_cities(list_city)
+    >>> dict_covid = covid_dataset.get_covid_cases_per_province(provs)
+    >>> list_provs = create_provinces(list_city, dict_covid)
     """
     prov_accumulator = []
     for province in covid_cases:
@@ -172,6 +187,15 @@ def plot_provinces(prov_accumulator: list) -> None:
     """
     Plot a number of graphs juxtaposing the values from each city in a shared province against
     each other and the number of COVID cases in that province.
+
+    Preconditions:
+        - prov_accumulator != []
+
+    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> provs = plot_cities(list_city)
+    >>> dict_covid = covid_dataset.get_covid_cases_per_province(provs)
+    >>> list_provs = create_provinces(list_city, dict_covid)
+    >>> plot_provinces(list_provs)
     """
     for prov in prov_accumulator:
         plotting.plot_interprovincial(prov, 500)  # Can change these 500s to any other integer;
@@ -264,7 +288,7 @@ def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     """
     Save only the desired columns in lst from filename as a DataFrame.
 
-    >>> file = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
+    >>> f = read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
     """
     file = pd.read_csv(filename, usecols=lst)
@@ -309,14 +333,15 @@ if __name__ == '__main__':
     provinces = plot_cities(city_list)
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
+    plot_provinces(prov_list)
 
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset',
-                          'sima_dataset', 'pandas'],
-        # the names (strs) of imported modules
-        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
-        'max-line-length': 100,
-        'disable': ['R1705', 'C0200']
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset',
+    #                       'sima_dataset', 'pandas'],
+    #     # the names (strs) of imported modules
+    #     # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 100,
+    #     'disable': ['R1705', 'C0200']
+    # })

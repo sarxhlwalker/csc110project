@@ -24,7 +24,7 @@ def adjust_sima_hpi(dataframe: pd.DataFrame) -> dict[tuple[str, str, str], float
 
     The file originally had index=100 set in December 2016.
 
-    It is being adjusted to match the the other csv files beong used for this project.
+    It is being adjusted to match the the other csv files used for this project.
     """
     hpi_base_case = []
     for row in range(34560, 34680):  # 2005-01
@@ -49,6 +49,10 @@ def restrict_city_sima(adjusted_values: dict, cities: list[str]) -> \
     to a float (hpi).
 
     Dictionaries are only created for cities if they are in the given list.
+
+    Preconditions:
+        - adjusted_values != {}
+        - cities = []
     """
     restricted_cities = []
     for city in cities:
@@ -67,6 +71,9 @@ def split_type_sima(restricted_cities: list[dict[tuple[str, str, str], float]]) 
     """
     Split Sima's datatype into three dictionaries: HPI for total house and land, house only, and
     land only.
+
+    Preconditions:
+        - restricted_cities != []
     """
     split_type_for_cities = []
     for city in restricted_cities:
@@ -89,8 +96,13 @@ def split_type_sima(restricted_cities: list[dict[tuple[str, str, str], float]]) 
 
 def condense_time_sima(dictionary: dict) -> list[float]:
     """
-    Create a copy of a dataframe such that REF_DATE is the span of one year from July to June, and
+    Helper function for run_condense_time.
+
+    Creates a copy of a dataframe such that REF_DATE is the span of one year from July to June, and
     VALUE is adjusted accordingly.
+
+    Preconditions:
+        - dictionary != {}
     """
     return_list = []
     count = 0
@@ -109,7 +121,12 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
                                                         dict[tuple[str, str, str], float]]]) -> \
         list[dict[str, tuple[list[float], list[float], list[float]]]]:
     """
-    Implement condense_time_sima.
+    Returns a list for use in main to create a classes.City instance.
+
+    Implements condense_time_sima such that the time periods match that of our other data.
+
+    Preconditions:
+        - split_type_for_cities != []
     """
     cities = []
     for city in split_type_for_cities:
@@ -126,8 +143,12 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
 
 def append_sima_csv(cities: list[dict[str, tuple[list[float], list[float], list[float]]]]) -> None:
     """
-    Appends csv files I created as needed.
+    Appends csv files as needed.
+
     Refer to sima_template.csv to see how they looked before the function was called.
+
+    Preconditions:
+        - cities != []
     """
     reset_sima_csvs()
     for city in cities:
@@ -157,17 +178,17 @@ def reset_sima_csvs() -> None:
     """
     Empties sima's csv files.
     """
-    f = open('sima_house.csv', "w")
-    f.truncate()
-    f.close()
+    with open('sima_house.csv', "w") as f:
+        f.truncate()
+        f.close()
 
-    f = open('sima_land.csv', "w")
-    f.truncate()
-    f.close()
+    with open('sima_land.csv', "w") as f:
+        f.truncate()
+        f.close()
 
-    f = open('sima_composite.csv', "w")
-    f.truncate()
-    f.close()
+    with open('sima_composite.csv', "w") as f:
+        f.truncate()
+        f.close()
 
 
 if __name__ == '__main__':

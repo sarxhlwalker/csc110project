@@ -21,6 +21,7 @@ def split_type_sarah(dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     """
     Split city_migration data into two separate DataFrames; one for intraprovincial
     migration and the other for interprovincial.
+
     >>> import main
     >>> file = main.read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
                 'Components of population growth', 'VALUE'])
@@ -53,7 +54,7 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     city_inter = []
     city_intra = []
     for _, row in inter.iterrows():
-        # iterrows() returns  each row in a tuple of the form (index, Series)
+        # .iterrows() returns each row in a tuple of the form (index, Series)
         if row.loc['GEO'] == city:
             city_inter.append(row.loc['VALUE'])
         # gets only the values that correspond with the given city

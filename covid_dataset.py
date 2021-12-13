@@ -21,6 +21,14 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
     """
     Returns a dictionary mapping all the provinces in provinces to the corresponding
     total number of corresponding covid cases during 2015 to June 2020.
+
+    Preconditions:
+        - provinces != set()
+
+    >>> import main
+    >>> city_list = main.create_cities(main.SIMA_FILE, main.SARAH_FILE, main.MANYA_FILES)
+    >>> provs = main.plot_cities(city_list)
+    >>> prov_covid = get_covid_cases_per_province(provs)
     """
     covid_file = pd.read_csv('Data Sets/covid19-download.csv')
     c_reversed = reversed(covid_file.index)
@@ -37,8 +45,13 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
 def get_covid_case_value(province: str, covid_file: pd.DataFrame, c_reversed: reversed) -> \
         list[int]:
     """
+    Helper function for get_covid_cases_per_province.
+
     Returns a list of integers that represents the total covid cases during 2015 to June 2020
     for the corresponding province.
+
+    Preconditions:
+        - province != ''
     """
     cases_list = [0, 0, 0, 0]  # initializes a list with 4 zeros corresponding to the covid
     # cases for years 2015/2016, 2016/2017, 2017/2018, 2018/2019

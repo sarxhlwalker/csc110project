@@ -33,6 +33,10 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) -> l
     Create a copy of one of Manya's dataframes such that Date is the span of one year,
      and Single_Family_HPI_SA is adjusted accordingly.
 
+     Preconditions:
+        - len(range_of_years) == 5
+        - all(x in {2015, 2016, 2017, 2018, 2019} for x in range_of_years)
+
     >>> import main
     >>> file = \
     main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \

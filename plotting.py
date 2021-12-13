@@ -69,6 +69,9 @@ def plot_hpi(city: City) -> None:
 def plot_intraprovincial(province: Province, index: int) -> None:
     """
     Plots each city in province's intraprovincial values, contrasted by the province's COVID cases.
+
+    Preconditions:
+        - index != 0
     """
     file_name = 'Province_Plots/' + province.name + '_intraprovincial.html'
     plot.output_file(file_name)
@@ -94,6 +97,9 @@ def plot_intraprovincial(province: Province, index: int) -> None:
 def plot_interprovincial(province: Province, index: int) -> None:
     """
     Plots each city in province's interprovincial values, contrasted by the province's COVID cases.
+
+    Preconditions:
+        - index != 0
     """
     file_name = 'Province_Plots/' + province.name + '_interprovincial.html'
     plot.output_file(file_name)
@@ -118,6 +124,9 @@ def plot_interprovincial(province: Province, index: int) -> None:
 def plot_tot_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's total HPI values, contrasted with the province's COVID cases.
+
+    Preconditions:
+        - index != 0
     """
     file_name = 'Province_Plots/' + province.name + '_total_hpi.html'
     plot.output_file(file_name)
@@ -142,6 +151,9 @@ def plot_tot_hpi(province: Province, index: int) -> None:
 def plot_house_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's house HPI values, contrasted with the province's COVID cases.
+
+    Preconditions:
+        - index != 0
     """
     file_name = 'Province_Plots/' + province.name + '_house_hpi.html'
     plot.output_file(file_name)
@@ -166,6 +178,9 @@ def plot_house_hpi(province: Province, index: int) -> None:
 def plot_land_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's land HPI values, contrasted with the province's COVID cases.
+
+    Preconditions:
+        - index != 0
     """
     file_name = 'Province_Plots/' + province.name + '_land_hpi.html'
     plot.output_file(file_name)
@@ -191,6 +206,9 @@ def divide_covid_cases(prov_cov_cases: list[int], index: int) -> list[int]:
     """
     Return a list of covid cases for a specific province that will match scale for another set of
     values for a graph.
+
+    Preconditions:
+        - index != 0
     """
     new_list = []
     for val in prov_cov_cases:
