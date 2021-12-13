@@ -1,9 +1,25 @@
-import bokeh.plotting as plot
-import bokeh.palettes as palettes
-from bokeh.layouts import row
+"""
+CSC110: Final Project
+
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC110 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC110 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+"""
+
+from bokeh import plotting as plot
+from bokeh import palettes
+from classes import City
+from classes import Province
 
 
-def plot_migration(city) -> plot.figure:
+def plot_migration(city: City) -> None:
     """
     Plots inter and intra values for one city as a line graph.
     """
@@ -21,10 +37,8 @@ def plot_migration(city) -> plot.figure:
 
     plot.save(p)
 
-    return p
 
-
-def plot_hpi(city) -> plot.figure:
+def plot_hpi(city: City) -> None:
     """
     Plots the three HPI values for one city as a bar graph.
     """
@@ -37,23 +51,21 @@ def plot_hpi(city) -> plot.figure:
     y_axis = ['Total (house and land)', 'House only', 'Land only']
 
     data = {'years': ['2016', '2017', '2018', '2019', '2020'],
-            'Total (house and land)': [x for x in city.house_land_avg],
-            'House only': [x for x in city.house_avg],
-            'Land only': [x for x in city.land_avg]}
+            'Total (house and land)': list(city.house_land_avg),
+            'House only': list(city.house_avg),
+            'Land only': list(city.land_avg)}
 
     p = plot.figure(x_range=[str(x) for x in city.year], title=(city.name + ' HPI'))
     p.vbar_stack(y_axis, x='years', width=0.9, source=data, fill_color=colours,
-                 legend_label=[x for x in y_axis])
+                 legend_label=list(y_axis))
 
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 
     plot.save(p)
 
-    return p
 
-
-def plot_intraprovincial(province, index: int) -> plot.figure:
+def plot_intraprovincial(province: Province, index: int) -> None:
     """
     Plots each city in province's intraprovincial values, contrasted by the province's COVID cases.
     """
@@ -77,10 +89,8 @@ def plot_intraprovincial(province, index: int) -> plot.figure:
 
     plot.save(p)
 
-    return p
 
-
-def plot_interprovincial(province, index: int) -> plot.figure:
+def plot_interprovincial(province: Province, index: int) -> None:
     """
     Plots each city in province's interprovincial values, contrasted by the province's COVID cases.
     """
@@ -96,18 +106,15 @@ def plot_interprovincial(province, index: int) -> plot.figure:
     covid_cases = divide_covid_cases(province.covid_cases, index)
 
     p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases, legend_label='COVID cases divided by '
-                                                                         + str(index),
-           line_color=colours[len(province.city_list)])
+           + str(index), line_color=colours[len(province.city_list)])
 
     p.legend.location = 'top_left'
     p.legend.click_policy = 'hide'
 
     plot.save(p)
 
-    return p
 
-
-def plot_tot_hpi(province, index: int) -> plot.figure:
+def plot_tot_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's total HPI values, contrasted with the province's COVID cases.
     """
@@ -123,18 +130,15 @@ def plot_tot_hpi(province, index: int) -> plot.figure:
     covid_cases = divide_covid_cases(province.covid_cases, index)
 
     p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases, legend_label='COVID cases divided by '
-                                                                                  + str(index),
-           line_color=colours[len(province.city_list)])
+           + str(index), line_color=colours[len(province.city_list)])
 
     p.legend.location = "top_left"
     p.legend.click_policy = "hide"
 
     plot.save(p)
 
-    return p
 
-
-def plot_house_hpi(province, index: int) -> plot.figure:
+def plot_house_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's house HPI values, contrasted with the province's COVID cases.
     """
@@ -150,18 +154,15 @@ def plot_house_hpi(province, index: int) -> plot.figure:
     covid_cases = divide_covid_cases(province.covid_cases, index)
 
     p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases, legend_label='COVID cases divided by '
-                                                                         + str(index),
-           line_color=colours[len(province.city_list)])
+           + str(index), line_color=colours[len(province.city_list)])
 
     p.legend.location = "top_left"
     p.legend.click_policy = "hide"
 
     plot.save(p)
 
-    return p
 
-
-def plot_land_hpi(province, index: int) -> plot.figure:
+def plot_land_hpi(province: Province, index: int) -> None:
     """
     Plots each city in province's land HPI values, contrasted with the province's COVID cases.
     """
@@ -177,15 +178,12 @@ def plot_land_hpi(province, index: int) -> plot.figure:
     covid_cases = divide_covid_cases(province.covid_cases, index)
 
     p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases, legend_label='COVID cases divided by '
-                                                                         + str(index),
-           line_color=colours[len(province.city_list)])
+           + str(index), line_color=colours[len(province.city_list)])
 
     p.legend.location = "top_left"
     p.legend.click_policy = "hide"
 
     plot.save(p)
-
-    return p
 
 
 def divide_covid_cases(prov_cov_cases: list[int], index: int) -> list[int]:
@@ -199,16 +197,14 @@ def divide_covid_cases(prov_cov_cases: list[int], index: int) -> list[int]:
     return new_list
 
 
-def plot_all(city_migration: list, city_hpi: list, prov_inter: list, prov_intra: list,
-             prov_hpi: list, prov_house: list, prov_land: list) -> None:
-    """
-    Collect all our plots into one HTML file.
-    """
-    list_all = city_migration + city_hpi + prov_inter + prov_intra + prov_hpi + prov_house + \
-               prov_land
-    plot.show(row([item for item in list_all]))
-
-
-
 if __name__ == '__main__':
-    pass
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })

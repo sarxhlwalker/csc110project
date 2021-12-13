@@ -1,9 +1,17 @@
-import main
-import manya_dataset
-import sarah_dataset
-import sima_dataset
-import datetime
+"""
+CSC110: Final Project
 
+Copyright and Usage Information
+===============================
+
+This file is provided solely for the personal and private use of students
+taking CSC110 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC110 materials,
+please consult our Course Syllabus.
+
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
+"""
 
 class City:
     """"
@@ -81,4 +89,13 @@ class Province:
 
 
 if __name__ == '__main__':
-    pass
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })

@@ -32,11 +32,13 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) \
         row = 0
         while row < len(dataframe):
             if dataframe.loc[row, 'Date'][0:3] == 'Jul' and dataframe.loc[row, 'Date'][4:] == x:
-                # checks if the date is currently at July and if the year is equal to the current year in range_of_years
+                # checks if the date is currently at July and if the year is equal to the current
+                # year in range_of_years
                 year_list = iterate_twelve(dataframe, year_list, row)
                 row += 12  # skips 12 rows, to the next time that the month is July
             else:
-                row += 1  # since the month didn't start at July, we don't want to start aggregating the data for that year yet, so move onto the next row instead
+                row += 1  # since the month didn't start at July, we don't want to start
+                # aggregating the data for that year yet, so move onto the next row instead
         avg = sum(year_list) / len(year_list)
         return_list.append(avg)
     return return_list
@@ -44,7 +46,8 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) \
 
 def iterate_twelve(dataframe: pd.DataFrame, year_list: list[str], row: int):
     """
-    Iterates through the dataframe tweleve times and adds the data for each row into year_list. This will include the data from July in one year to June in the next year.
+    Iterates through the dataframe tweleve times and adds the data for each row into year_list.
+    This will include the data from July in one year to June in the next year.
 
     Helper function for condense_time_manya.
     """

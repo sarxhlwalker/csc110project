@@ -1,8 +1,16 @@
 """
+CSC110: Final Project
 
-Final Project
+Copyright and Usage Information
+===============================
 
+This file is provided solely for the personal and private use of students
+taking CSC110 at the University of Toronto St. George campus. All forms of
+distribution of this code, whether as given or with any changes, are
+expressly prohibited. For more information on copyright for CSC110 materials,
+please consult our Course Syllabus.
 
+This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, and Manya Mittal.
 """
 
 import pandas as pd
@@ -116,7 +124,7 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
 
     manya_year = ['2015', '2016', '2017', '2018', '2019']
 
-    city_list = []  # Accumulator for classes.City instances
+    city_accumulator = []  # Accumulator for classes.City instances
 
     for key in CITY_DICT:  # for each relevant city
         manya_city = read_file(manya[key], ['Date', 'Single_Family_HPI_SA'])
@@ -125,25 +133,7 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
 
         # Above returns a list of five years' worth of the city's Single Family SA HPI.
 
-        house_land_avg = []
-        house = []
-        land = []
-
-        for item in condensed:
-            for single_key in item:
-                if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from
-                    # Sima's dataset
-                    house = item[single_key][0]
-                    land = item[single_key][1]
-                    comp = item[single_key][2]
-
-                    # Above acquires the relevant information from the dictionary to call
-                    # house_land_avg
-
-                    house_land_avg = avg_datasets(timed_manya_city, comp)
-
-                    # We have acquired all the information we need from the loop(s),
-                    # so we can safely break to save time.
+        house, land, house_land_avg = create_items(condensed, key, timed_manya_city)
 
         _, prov = CITY_DICT[key][0].split(',')
         province = prov.strip()
@@ -154,71 +144,87 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list:
 
         # Above returns a five-item list of the city's interprovincial and intraprovincial values.
 
-        city_list.append(classes.City(key, year, city_inter,
-                                      city_intra, house_land_avg, house, land, province))
+        city_accumulator.append(classes.City(key, year, city_inter,
+                                city_intra, house_land_avg, house, land, province))
 
-        # Creates a classes.City instance and appends to city_list
+        # Creates a classes.City instance and appends to city_accumulator
 
-    city_list = classes.moncton_and_fredericton(city_list)
+    city_accumulator = classes.moncton_and_fredericton(city_accumulator)
 
     # Above combines the Moncton and Fredericton classes.City instance into one City,
     # because we had data overlap.
 
-    return city_list  # Returns list of all classes.City instances we have data for
+    return city_accumulator  # Returns list of all classes.City instances we have data for
 
 
-def plot_cities(city_list: list) -> tuple[list, list, set]:
+def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
+        tuple[list[float], list[float], list[float]]:
+    """
+    Helper function for create_cities.
+    """
+    house = []
+    land = []
+    house_land_avg = []     # bc python hates me <3
+
+    for item in condensed:
+        for single_key in item:
+            # house_land_avg, house, land = create_items(single_key, item, key, timed_manya_city)
+            if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from
+                # Sima's dataset
+                house = item[single_key][0]
+                land = item[single_key][1]
+                comp = item[single_key][2]
+
+                # Above acquires the relevant information from the dictionary to call
+                # house_land_avg
+                house_land_avg = avg_datasets(timed_manya_city, comp)
+
+    return house, land, house_land_avg
+
+
+def plot_cities(city_accumulator: list) -> set:
     """Now the actual plotting.
 
     This function should:
-      - go through every item in city_list
+      - go through every item in city_accumulator
       - call plotting.plot_migration
       - call plotting.plot_hpi
       - ensure that all plots are uniquely named (ie. no duplicate files for one city, but each
       city should have 2 graphs) and stored in a folder specifically for plots
       - plot the COVID data
     """
-    city_migration = []
-    city_hpi = []
-    for city in city_list:
-        city_migration.append(plotting.plot_migration(city))
-        city_hpi.append(plotting.plot_hpi(city))
-
-    return city_migration, city_hpi, {city.province for city in city_list}
+    for city in city_accumulator:
+        plotting.plot_migration(city)
+        plotting.plot_hpi(city)
+    return {specific_city.province for specific_city in city_accumulator}
 
 
-def create_provinces(city_list: list, covid_cases: dict[str, list[int]]) -> list:
+def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) -> list:
     """
     Create a list of Province instances so we can plot their values.
     """
-    prov_list = []
+    prov_accumulator = []
     for province in covid_cases:
         covid_nums = covid_cases[province]
         cities = []
-        for city in city_list:
+        for city in city_accumulator:
             if city.province == province:
                 cities.append(city)
-        prov_list.append(classes.Province(province, cities, covid_nums))
-    return prov_list
+        prov_accumulator.append(classes.Province(province, cities, covid_nums))
+    return prov_accumulator
 
 
-def plot_provinces(prov_list: list) -> tuple[list, list, list, list, list]:
+def plot_provinces(prov_accumulator: list) -> None:
     """
     Plot a number of graphs juxtaposing the values from each city in a shared province against
     each other and the number of COVID cases in that province.
     """
-    prov_intra = []
-    prov_inter = []
-    prov_hpi = []
-    prov_house = []
-    prov_land = []
-    for prov in prov_list:
-        prov_inter.append(plotting.plot_interprovincial(prov, 500))
-        prov_intra.append(plotting.plot_intraprovincial(prov, 500))
-        prov_hpi.append(plotting.plot_tot_hpi(prov, 500))
-        prov_house.append(plotting.plot_house_hpi(prov, 500))
-        prov_land.append(plotting.plot_land_hpi(prov, 500))
-    return prov_inter, prov_intra, prov_hpi, prov_house, prov_land
+    for prov in prov_accumulator:
+        plotting.plot_interprovincial(prov, 500)
+        plotting.plot_intraprovincial(prov, 500)
+        plotting.plot_tot_hpi(prov, 500)
+        plotting.plot_house_hpi(prov, 500)
+        plotting.plot_land_hpi(prov, 500)
 
 
 # HELPER FUNCTIONS THAT 2+ DATASETS USE. FOR SPECIFIC DATASET FUNCTIONS, SEE OTHER PYTHON FILES.
@@ -235,7 +241,7 @@ def read_file(filename: str, lst: list[str]) -> pd.DataFrame:
     return file
 
 
-def sort_file(dataframe, keywords: set[str], column: str):
+def sort_file(dataframe: pd.DataFrame, keywords: set[str], column: str) -> pd.DataFrame:
     """
     Create and return a new DataFrame containing only rows whose specified column are a
         specific keyword.
@@ -252,20 +258,20 @@ def sort_file(dataframe, keywords: set[str], column: str):
     return pd.DataFrame(lst)
 
 
-def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]:
+def avg_datasets(list_cities: list[float], house_list: list[float]) -> list[float]:
     """
     Return a list of average values from Manya's Single Family HPI values and Sima's HPI value.
     This is for one specific city only.
 
     Preconditions:
-        - len(city_list) == len(house_list)
+        - len(list_cities) == len(house_list)
 
     TODO: Doctest
 
     """
     return_list = []
-    for i in range(len(city_list)):
-        s = city_list[i] + house_list[i]
+    for i in range(len(list_cities)):
+        s = list_cities[i] + house_list[i]
         avg = s / 2
         return_list.append(avg)
     return return_list
@@ -273,12 +279,9 @@ def avg_datasets(city_list: list[float], house_list: list[float]) -> list[float]
 
 if __name__ == '__main__':
     city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
-    city_migration, city_hpi, provinces = plot_cities(city_list)
+    provinces = plot_cities(city_list)
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
-    prov_inter, prov_intra, prov_hpi, prov_house, prov_land = plot_provinces(prov_list)
-    # plotting.plot_all(city_migration, city_hpi, prov_inter, prov_intra, prov_hpi, prov_house,
-    #                   prov_land)
 
     # TODO: sort out python_ta
 
