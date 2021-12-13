@@ -13,8 +13,10 @@ def split_type_sarah(dataframe: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
             'Net intraprovincial migration'}, 'Components of population growth')
     >>> inter, intra = split_type_sarah(sorted_file)
     """
-    inter = dataframe[dataframe['Components of population growth'] == 'Net interprovincial migration']
-    intra = dataframe[dataframe['Components of population growth'] == 'Net intraprovincial migration']
+    inter = dataframe[dataframe['Components of population growth'] ==
+                      'Net interprovincial migration']
+    intra = dataframe[dataframe['Components of population growth'] ==
+                      'Net intraprovincial migration']
     return inter, intra
 
 
@@ -24,8 +26,8 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
     computations are needed on Sarah's dataset, so this returns a list, ready for input to class
     City.
 
-    >>> city_migration = main.read_file('Data Sets/city migration and others.csv', ['REF_DATE', 'GEO', \
-                'Components of population growth', 'VALUE'])
+    >>> city_migration = main.read_file('Data Sets/city migration and others.csv', \
+                ['REF_DATE', 'GEO', 'Components of population growth', 'VALUE'])
     >>> city_migration = main.sort_file(city_migration,{'Net interprovincial migration', \
             'Net intraprovincial migration'}, 'Components of population growth')
     >>> inter, intra = split_type_sarah(city_migration)
@@ -49,4 +51,14 @@ def restrict_city_sarah(inter: pd.DataFrame, intra: pd.DataFrame, city: str) -> 
 
 
 if __name__ == '__main__':
-    pass
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['main', 'classes', 'covid_dataset', 'manya_dataset',
+                          'bokeh', 'sarah_dataset',
+                          'sima_dataset', 'pandas'],
+        # the names (strs) of imported modules
+        # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
+        'max-line-length': 100,
+        'disable': ['R1705', 'C0200']
+    })
