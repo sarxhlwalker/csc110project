@@ -130,7 +130,7 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.
         # classes.City instance and appends to city_accumulator
 
     city_accumulator = classes.moncton_and_fredericton(city_accumulator)  # Combines the Moncton and
-    # Fredericton classes.City instance into one City, because we had data overlap.
+    # Fredericton classes.City instances into one City, because we had data overlap.
 
     return city_accumulator  # Returns list of all classes.City instances we have data for
 
@@ -183,6 +183,7 @@ def plot_provinces(prov_accumulator: list) -> None:
 
 
 # HELPER FUNCTIONS FOR MAIN FUNCTIONS
+
 
 def create_sima(sima: str) -> list:
     """
@@ -241,22 +242,20 @@ def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
     """
     house = []
     land = []
-    house_land_avg = []     # bc python hates me <3
+    house_land_avg = []
 
     for item in condensed:
         for single_key in item:
-            # house_land_avg, house, land = create_items(single_key, item, key, timed_manya_city)
             if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from
                 # Sima's dataset
                 house = item[single_key][0]
                 land = item[single_key][1]
-                comp = item[single_key][2]
-
-                # Above acquires the relevant information from the dictionary to call
-                # house_land_avg
+                comp = item[single_key][2]  # Acquires the relevant information from the
+                # dictionary to call house_land_avg
                 house_land_avg = avg_datasets(timed_manya_city, comp)
 
     return house, land, house_land_avg
+
 
 # HELPER FUNCTIONS THAT 2+ DATASETS USE. FOR SPECIFIC DATASET FUNCTIONS, SEE OTHER PYTHON FILES.
 

@@ -18,8 +18,10 @@ import pandas as pd
 
 
 def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
-    """Returns a dictionary mapping all the provinces in provinces to the corresponding
-    total number of corresponding covid cases during 2015 to June 2020"""
+    """
+    Returns a dictionary mapping all the provinces in provinces to the corresponding
+    total number of corresponding covid cases during 2015 to June 2020.
+    """
     covid_file = pd.read_csv('Data Sets/covid19-download.csv')
     c_reversed = reversed(covid_file.index)
     # an iterable that has reversed the order of rows in covid_file
@@ -32,10 +34,12 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
     return province_to_covid_cases
 
 
-def get_covid_case_value(province: str, covid_file: pd.DataFrame,
-                         c_reversed: reversed) -> list[int]:
-    """Returns a list of integers that represents the total covid cases during 2015 to June 2020
-    for the corresponding province"""
+def get_covid_case_value(province: str, covid_file: pd.DataFrame, c_reversed: reversed) -> \
+        list[int]:
+    """
+    Returns a list of integers that represents the total covid cases during 2015 to June 2020
+    for the corresponding province.
+    """
     cases_list = [0, 0, 0, 0]  # initializes a list with 4 zeros corresponding to the covid
     # cases for years 2015/2016, 2016/2017, 2017/2018, 2018/2019
     for row in c_reversed:  # iterates through the reversed order of the covid_file
@@ -45,6 +49,7 @@ def get_covid_case_value(province: str, covid_file: pd.DataFrame,
             # checks if 2020-00 <= date <= 2020-06 and if it matches the province
             cases_list.append(covid_file.loc[row, 'numtotal'])  # adds the total cases to the list
             return cases_list
+    return cases_list
 
 
 if __name__ == '__main__':

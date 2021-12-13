@@ -33,7 +33,9 @@ class City:
     Representation Invariants:
         - self.name != ''
         - all(x in {2015, 2016, 2017, 2018, 2019} for x in self.year)
-        # TODO: add more representation invariants?
+        - len(self.intraprovincial) == len(self.interprovincial) == len(house_land_avg)
+        - len(house_land_avg) == len(house_avg) == len(land_avg) == 5
+        - self.province != ''
     """
     name: str
     year: list[int]
@@ -62,6 +64,9 @@ def moncton_and_fredericton(city_list: list[City]) -> list[City]:
     """
     Combine the Moncton and Fredericton City instances because we have data overlap in Manya and
     Sima's data.
+
+    Preconditions:
+        - len(city_list) != 0
     """
     new_list = []
     moncton = city_list[0]  # because pycharm hates me
@@ -97,12 +102,13 @@ class Province:
 
     Instance Attributes:
         - name: the name of the province
-        - city_list: a list of all the cities in the province
-        - covid_cases: a list of the covid cases in each city in the province
-        # TODO: check this
+        - city_list: a list of all the relevant cities in the province
+        - covid_cases: a list of the COVID cases each year in the province
 
     Representation Invariants:
         - self.name != ''
+        - city_list != []
+        - len(covid_cases) == 5
     """
     name: str
     city_list: list[City]
