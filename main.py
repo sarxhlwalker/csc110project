@@ -265,9 +265,6 @@ def avg_datasets(list_cities: list[float], house_list: list[float]) -> list[floa
 
     Preconditions:
         - len(list_cities) == len(house_list)
-
-    TODO: Doctest
-
     """
     return_list = []
     for i in range(len(list_cities)):
@@ -282,8 +279,6 @@ if __name__ == '__main__':
     provinces = plot_cities(city_list)
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
-
-    # TODO: sort out python_ta
 
     import python_ta
 
