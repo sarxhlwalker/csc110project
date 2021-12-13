@@ -331,9 +331,14 @@ def avg_datasets(list_cities: list[float], house_list: list[float]) -> list[floa
 if __name__ == '__main__':
     city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
     provinces = plot_cities(city_list)
+    print('Cities have been plotted! Provinces are now being plotted. Thanks for your patience.')
+
     covid_dict = covid_dataset.get_covid_cases_per_province(provinces)
     prov_list = create_provinces(city_list, covid_dict)
     plot_provinces(prov_list)
+
+    print('\n Province graphs have now been plotted! Feel free to open any of the HTML graphs in '
+          '/City_Plots or /Province_Plots in your browser of choice.')
 
     # import python_ta
     #
