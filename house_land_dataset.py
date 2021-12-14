@@ -17,7 +17,7 @@ from csv import writer
 import pandas as pd
 
 
-def adjust_sima_hpi(dataframe: pd.DataFrame) -> dict[tuple[str, str, str], float]:
+def adjust_house_land_hpi(dataframe: pd.DataFrame) -> dict[tuple[str, str, str], float]:
     """
     Returns a dictionary mapping (month, year, type) to (house price indexes with index=100
     set in January 2005).
@@ -42,11 +42,11 @@ def adjust_sima_hpi(dataframe: pd.DataFrame) -> dict[tuple[str, str, str], float
     return adjusted_values
 
 
-def restrict_city_sima(adjusted_values: dict, cities: list[str]) -> \
+def restrict_city_house_land(adjusted_values: dict, cities: list[str]) -> \
         list[dict[tuple[str, str, str], float]]:
     """
     Returns a list of dictionaries where each dictionary maps a tuple (date, city, type)
-    to a float (hpi).
+    to a float (HPI).
 
     Dictionaries are only created for cities if they are in the given list.
 
@@ -65,12 +65,12 @@ def restrict_city_sima(adjusted_values: dict, cities: list[str]) -> \
     return restricted_cities
 
 
-def split_type_sima(restricted_cities: list[dict[tuple[str, str, str], float]]) -> \
+def split_type_house_land(restricted_cities: list[dict[tuple[str, str, str], float]]) -> \
         list[tuple[dict[tuple[str, str, str], float], dict[tuple[str, str, str], float],
                    dict[tuple[str, str, str], float]]]:
     """
-    Split Sima's datatype into three dictionaries: HPI for total house and land, house only, and
-    land only.
+    Split the House and Land datatype into three dictionaries: HPI for total house and land,
+    house only, and land only.
 
     Preconditions:
         - restricted_cities != []
@@ -94,7 +94,7 @@ def split_type_sima(restricted_cities: list[dict[tuple[str, str, str], float]]) 
     return split_type_for_cities
 
 
-def condense_time_sima(dictionary: dict) -> list[float]:
+def condense_time_house_land(dictionary: dict) -> list[float]:
     """
     Helper function for run_condense_time.
 
@@ -123,7 +123,7 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
     """
     Returns a list for use in main to create a classes.City instance.
 
-    Implements condense_time_sima such that the time periods match that of our other data.
+    Implements condense_time_house_land such that the time periods match that of our other data.
 
     Preconditions:
         - split_type_for_cities != []
@@ -135,13 +135,15 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
         city_key = ''
         for key, _ in house.items():
             city_key = key[1]
-        individual_city[city_key] = (condense_time_sima(house), condense_time_sima(land),
-                                     condense_time_sima(composite))
+        individual_city[city_key] = (condense_time_house_land(house),
+                                     condense_time_house_land(land),
+                                     condense_time_house_land(composite))
         cities.append(individual_city)
     return cities
 
 
-def append_sima_csv(cities: list[dict[str, tuple[list[float], list[float], list[float]]]]) -> None:
+def append_house_land_csv(cities: list[dict[str, tuple[list[float], list[float], list[float]]]])\
+        -> None:
     """
     Appends csv files as needed.
 
@@ -150,7 +152,7 @@ def append_sima_csv(cities: list[dict[str, tuple[list[float], list[float], list[
     Preconditions:
         - cities != []
     """
-    reset_sima_csvs()
+    reset_house_land_csvs()
     for city in cities:
         for key, value in city.items():
             row_house = [key, 'House only', value[0][0], value[0][1], value[0][2],
@@ -160,33 +162,33 @@ def append_sima_csv(cities: list[dict[str, tuple[list[float], list[float], list[
             row_composite = [key, 'Composite (house and land)', value[2][0], value[2][1],
                              value[2][2], value[2][3], value[2][4]]
 
-            with open('sima_house.csv', 'a') as f_object:
+            with open('house_land_house.csv', 'a') as f_object:
                 writer_object = writer(f_object)
                 writer_object.writerow(row_house)
                 f_object.close()
-            with open('sima_land.csv', 'a') as f_object:
+            with open('house_land_land.csv', 'a') as f_object:
                 writer_object = writer(f_object)
                 writer_object.writerow(row_land)
                 f_object.close()
-            with open('sima_composite.csv', 'a') as f_object:
+            with open('house_land_composite.csv', 'a') as f_object:
                 writer_object = writer(f_object)
                 writer_object.writerow(row_composite)
                 f_object.close()
 
 
-def reset_sima_csvs() -> None:
+def reset_house_land_csvs() -> None:
     """
-    Empties sima's csv files.
+    Empties house_land's csv files.
     """
-    with open('sima_house.csv', "w") as f:
+    with open('house_land_house.csv', "w") as f:
         f.truncate()
         f.close()
 
-    with open('sima_land.csv', "w") as f:
+    with open('house_land_land.csv', "w") as f:
         f.truncate()
         f.close()
 
-    with open('sima_composite.csv', "w") as f:
+    with open('house_land_composite.csv', "w") as f:
         f.truncate()
         f.close()
 
@@ -195,11 +197,11 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['main', 'classes', 'covid_dataset', 'manya_dataset',
-                          'bokeh', 'sarah_dataset',
-                          'sima_dataset', 'pandas', 'csv'],
+        'extra-imports': ['main', 'classes', 'covid_dataset', 'hpi_dataset', 'bokeh',
+                          'migration_dataset',
+                          'house_land_dataset', 'pandas', 'csv'],
         # the names (strs) of imported modules
-        'allowed-io': ['append_sima_csv', 'reset_sima_csvs'],
+        'allowed-io': ['append_house_land_csv', 'reset_house_land_csvs'],
         # the names (strs) of functions that call print/open/input
         'max-line-length': 100,
         'disable': ['R1705', 'C0200']

@@ -220,8 +220,9 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
-                          'sima_dataset', 'pandas'],
+        'extra-imports': ['classes', 'covid_dataset', 'hpi_dataset', 'bokeh',
+                          'migration_dataset',
+                          'house_land_dataset', 'pandas'],
         # the names (strs) of imported modules
         # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
         'max-line-length': 100,

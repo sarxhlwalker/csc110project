@@ -26,7 +26,7 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
         - provinces != set()
 
     >>> import main
-    >>> city_list = main.create_cities(main.SIMA_FILE, main.SARAH_FILE, main.MANYA_FILES)
+    >>> city_list = main.create_cities(main.HOUSE_LAND_FILE, main.MIGRATION_FILE, main.HPI_FILES)
     >>> provs = main.plot_cities(city_list)
     >>> prov_covid = get_covid_cases_per_province(provs)
     """
@@ -69,8 +69,9 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
-                          'sima_dataset', 'pandas'],
+        'extra-imports': ['classes', 'covid_dataset', 'hpi_dataset', 'bokeh',
+                          'migration_dataset',
+                          'house_land_dataset', 'pandas'],
         # the names (strs) of imported modules
         # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
         'max-line-length': 100,
