@@ -60,7 +60,7 @@ class City:
         self.province = province
 
 
-def moncton_and_fredericton(city_list: list[City]) -> list[City]:
+def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
     """
     Combine the Moncton and Fredericton City instances because we have data overlap in Manya and
     Sima's data.
@@ -69,31 +69,45 @@ def moncton_and_fredericton(city_list: list[City]) -> list[City]:
         - len(city_list) != 0
     """
     new_list = []
-    moncton = city_list[0]  # because pycharm hates me
-    fredricton = city_list[1]  # because pycharm hates me pt 2
+    city1 = city_list[0]
+    city2 = city_list[1]  # just initializing these variables; won't actually use them
+    for tup in merges:
+        for city in city_list:
+            if city.name == tup[0]:
+                city1 = city
+            elif city.name == tup[1]:
+                city2 = city
+        name = city1.name + ' and ' + city2.name
+        year = city1.year  # all year values are the same
+        inter, intra, comp, house, land = append_values(city1, city2)
+        new_list.append(City(name, year, inter, intra, comp, house, land, city1.province))
+    tups = [val for tup in merges for val in tup]
     for city in city_list:
-        if city.name != 'Greater Moncton' and city.name != 'Fredricton':
+        if city.name not in tups:
             new_list.append(city)
-        elif city.name == 'Greater Moncton':
-            moncton = city
-        elif city.name == 'Fredricton':
-            fredricton = city
+    return new_list
 
-    name = 'Greater Moncton and Fredricton'
-    year = moncton.year
+
+def append_values(city1: City, city2: City) -> tuple[list, list, list, list, list]:
+    """
+    Helper function for merge_cities.
+    """
     inter = []
     intra = []
     comp = []
     house = []
     land = []
     for i in range(5):
-        inter.append(moncton.interprovincial[i] + fredricton.interprovincial[i])
-        intra.append(moncton.intraprovincial[i] + fredricton.intraprovincial[i])
-        comp.append(moncton.house_land_avg[i] + fredricton.house_land_avg[i])
-        house.append(moncton.house_avg[i] + fredricton.house_avg[i])
-        land.append(moncton.land_avg[i] + fredricton.land_avg[i])
-    new_list.append(City(name, year, inter, intra, comp, house, land, moncton.province))
-    return new_list
+        inter.append(city1.interprovincial[i])   # the migration dataset is too general and has the
+        # same values for both city1 and city2
+        intra.append(city1.intraprovincial[i])
+        comp.append((city1.house_land_avg[i] + city2.house_land_avg[i]) / 2)  # the HPI dataset
+        # has two different values for the cities and so there will be two different averages,
+        # so we average the two averages.
+        house.append(city1.house_avg[i])  # Again, the House and Land dataset is too general and
+        # so will have the same values across both cities
+        land.append(city1.land_avg[i])
+    return inter, intra, comp, house, land
 
 
 class Province:

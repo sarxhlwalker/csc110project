@@ -131,8 +131,10 @@ def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.
                                 city_intra, house_land_avg, house, land, province))  # Creates a
         # classes.City instance and appends to city_accumulator
 
-    city_accumulator = classes.moncton_and_fredericton(city_accumulator)  # Combines the Moncton and
-    # Fredericton classes.City instances into one City, because we had data overlap.
+    city_accumulator = classes.merge_cities(city_accumulator,
+                                                       [('Greater Moncton', 'Fredricton'),
+                                                        ('Cambridge', 'Kitchener and Waterloo')])
+    # Combines the tuple of classes.City instances into one City, because we had data overlap.
 
     return city_accumulator  # Returns list of all classes.City instances we have data for
 
