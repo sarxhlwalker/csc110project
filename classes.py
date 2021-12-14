@@ -39,11 +39,11 @@ class City:
     """
     name: str
     year: list[int]
-    intraprovincial: list[int]  # sarah
-    interprovincial: list[int]  # sarah
-    house_land_avg: list[float]  # manya and sima
-    house_avg: list[float]  # sima
-    land_avg: list[float]  # sima
+    intraprovincial: list[int]  # migration
+    interprovincial: list[int]  # migration
+    house_land_avg: list[float]  # hpi and house_land
+    house_avg: list[float]  # house_land
+    land_avg: list[float]  # house_land
     province: str
 
     def __init__(self, name: str, year: list[int],
@@ -62,8 +62,8 @@ class City:
 
 def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
     """
-    Combine the Moncton and Fredericton City instances because we have data overlap in Manya and
-    Sima's data.
+    Combine City instances because the HPI dataset separates cities while the other 2 datasets
+    don't.
 
     Preconditions:
         - len(city_list) != 0
@@ -138,8 +138,9 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'bokeh', 'sarah_dataset',
-                          'sima_dataset', 'pandas'],
+        'extra-imports': ['classes', 'covid_dataset', 'hpi_dataset', 'bokeh',
+                          'migration_dataset',
+                          'house_land_dataset', 'pandas'],
         # the names (strs) of imported modules
         # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
         'max-line-length': 100,

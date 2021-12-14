@@ -20,9 +20,9 @@ This file is Copyright (c) 2021 Sarah Walker, Manya Mittal, Sima Shmuylovich, an
 import pandas as pd
 import classes
 import covid_dataset
-import sarah_dataset
-import manya_dataset
-import sima_dataset
+import migration_dataset
+import hpi_dataset
+import house_land_dataset
 import plotting
 
 # GENERAL VARIABLES FOR MAIN.PY
@@ -53,7 +53,7 @@ CITY_DICT = {'Cambridge': ['Kitchener - Cambridge - Waterloo (CMA), Ontario',
                  ['Saint John (CMA), New Brunswick', "St. John's, Newfoundland and Labrador"],
              'Victoria': ['Victoria (CMA), British Columbia', 'Victoria, British Columbia']}
 
-CITIES_SIMA = ['Kitchener-Cambridge-Waterloo, Ontario',
+CITIES_HOUSE_LAND = ['Kitchener-Cambridge-Waterloo, Ontario',
                'Saint John, Fredericton, and Moncton, New Brunswick',
                "St. John's, Newfoundland and Labrador",
                'Toronto, Ontario', 'Vancouver, British Columbia',
@@ -65,9 +65,9 @@ CITIES_SIMA = ['Kitchener-Cambridge-Waterloo, Ontario',
                "St. John's, Newfoundland and Labrador",
                'Victoria, British Columbia']
 
-SIMA_FILE = 'Data Sets/House and Land Prices.csv'
-SARAH_FILE = 'Data Sets/city migration and others.csv'
-MANYA_FILES = {'Cambridge':
+HOUSE_LAND_FILE = 'Data Sets/House and Land Prices.csv'
+MIGRATION_FILE = 'Data Sets/city migration and others.csv'
+HPI_FILES = {'Cambridge':
                'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
                'Fredricton':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Fredricton.csv',
@@ -79,52 +79,54 @@ MANYA_FILES = {'Cambridge':
                'Greater Vancouver':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Greater '
                    'Vancouver.csv',
-               'Kitchener and Waterloo':
+             'Kitchener and Waterloo':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Kitchener '
                    'and Waterloo.csv',
-               'London St Thomas':
+             'London St Thomas':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted London '
                    'St Thomas.csv',
-               'Montreal CMA':
+             'Montreal CMA':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Montreal CMA.csv',
-               'Niagara Region':
+             'Niagara Region':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Niagara Region.csv',
-               'Quebec CMA':
+             'Quebec CMA':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Quebec CMA.csv',
-               'Saint John':
+             'Saint John':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv',
-               'Victoria':
+             'Victoria':
                    'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Victoria.csv'}
 
 
 # MAIN FUNCTIONS (CALLED IN IF __MAIN__)
 
-def create_cities(sima: str, sarah: str, manya: dict[str, str]) -> list[classes.City]:
+def create_cities(house_land: str, migration: str, hpi: dict[str, str]) -> list[classes.City]:
     """
     Create a list of City instances so that we can plot their values.
 
-    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     """
-    condensed = create_sima(sima)  # Above prepares Sima's dataset into a dictionary with one key
-    # (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI,
-    # and the total house and land HPI.
+    condensed = create_house_land(house_land)  # Above prepares the House and Land dataset into a
+    # dictionary with one key (being a city) mapping to three lists of floats: five years of house
+    # only HPI, land only HPI, and the total house and land HPI.
 
-    inter, intra = create_sarah(sarah)  # Returns two DataFrames: one for every relevant city's net
-    # interprovincial migration value and one for every relevant city's intraprovincial migration.
+    inter, intra = create_migration(migration)  # Returns two DataFrames: one for every relevant
+    # city's net interprovincial migration value and one for every relevant city's intraprovincial
+    # migration.
 
     city_accumulator = []  # Accumulator for classes.City instances
 
     for key in CITY_DICT:  # for each relevant city
 
-        timed_manya_city = create_manya(manya, key, ['2015', '2016', '2017', '2018', '2019'])
+        timed_hpi_city = create_hpi(hpi, key, ['2015', '2016', '2017', '2018', '2019'])
         # Returns a list of five years' worth of the city's Single Family SA HPI.
 
-        house, land, house_land_avg = create_items(condensed, key, timed_manya_city)  # Returns
-        # relevant information from Sima's dataset for this specific city.
+        house, land, house_land_avg = create_items(condensed, key, timed_hpi_city)  # Returns
+        # relevant information from the House and Land dataset for this specific city.
 
         province = get_province(key)  # Retrieves the province attribute for the city.
 
-        city_inter, city_intra = sarah_dataset.restrict_city_sarah(inter, intra, CITY_DICT[key][0])
+        city_inter, city_intra = migration_dataset.restrict_city_migration(inter, intra,
+                                                                           CITY_DICT[key][0])
         # Returns a five-item list of the city's interprovincial and intraprovincial values.
 
         city_accumulator.append(classes.City(key, [2016, 2017, 2018, 2019, 2020], city_inter,
@@ -151,7 +153,7 @@ def plot_cities(city_accumulator: list) -> set[str]:
     Preconditions:
         - city_accumulator != []
 
-    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     >>> provs = plot_cities(city_accumulator)
     """
     for city in city_accumulator:
@@ -169,7 +171,7 @@ def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) 
         - city_accumulator != []
         - covid_cases != {}
 
-    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     >>> provs = plot_cities(list_city)
     >>> dict_covid = covid_dataset.get_covid_cases_per_province(provs)
     >>> list_provs = create_provinces(list_city, dict_covid)
@@ -193,7 +195,7 @@ def plot_provinces(prov_accumulator: list) -> None:
     Preconditions:
         - prov_accumulator != []
 
-    >>> list_city = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     >>> provs = plot_cities(list_city)
     >>> dict_covid = covid_dataset.get_covid_cases_per_province(provs)
     >>> list_provs = create_provinces(list_city, dict_covid)
@@ -211,45 +213,44 @@ def plot_provinces(prov_accumulator: list) -> None:
 # HELPER FUNCTIONS FOR MAIN FUNCTIONS
 
 
-def create_sima(sima: str) -> list:
+def create_house_land(house_land: str) -> list:
     """
-    Helper function for create_cities. Prepares Sima's dataset into a dictionary with one key
-    (being a city) mapping to three lists of floats: five years of house only HPI, land only HPI,
-    and the total house and land HPI.
+    Helper function for create_cities. Prepares the House and Land dataset into a dictionary with
+    one key (being a city) mapping to three lists of floats: five years of house only HPI,
+    land only HPI, and the total house and land HPI.
     """
-    adjusted_values = sima_dataset.adjust_sima_hpi(pd.read_csv(sima))
-    restricted_cities = sima_dataset.restrict_city_sima(adjusted_values, CITIES_SIMA)
-    split_type_for_cities = sima_dataset.split_type_sima(restricted_cities)
-    condensed = sima_dataset.run_condense_time(split_type_for_cities)
-    sima_dataset.append_sima_csv(condensed)
+    adjusted_values = house_land_dataset.adjust_house_land_hpi(pd.read_csv(house_land))
+    restricted_cities = house_land_dataset.restrict_city_house_land(adjusted_values, CITIES_HOUSE_LAND)
+    split_type_for_cities = house_land_dataset.split_type_house_land(restricted_cities)
+    condensed = house_land_dataset.run_condense_time(split_type_for_cities)
+    house_land_dataset.append_house_land_csv(condensed)
     return condensed
 
 
-def create_sarah(sarah: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def create_migration(migration: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Helper function for create_cities. Prepares Sarah's dataset to return two DataFrames:
+    Helper function for create_cities. Prepares the migration dataset to return two DataFrames:
     one for every relevant city's net interprovincial migration value and one for every relevant
     city's intraprovincial migration.
     """
-    sar = read_file(sarah, ['REF_DATE', 'GEO',
+    migr = read_file(migration, ['REF_DATE', 'GEO',
                             'Components of population growth', 'VALUE'])
-    sorted_sar = sort_file(sar, {'Net interprovincial migration',
+    sorted_migr = sort_file(migr, {'Net interprovincial migration',
                                  'Net intraprovincial migration'},
                            'Components of population growth')
-    inter, intra = sarah_dataset.split_type_sarah(sorted_sar)
-
+    inter, intra = migration_dataset.split_type_migration(sorted_migr)
     return inter, intra
 
 
-def create_manya(manya: dict[str, str], key: str, manya_year: list) -> list[float]:
+def create_hpi(hpis: dict[str, str], key: str, hpi_year: list) -> list[float]:
     """
     Helper function for create_cities. Returns a list of five years'
     worth of the city's Single Family SA HPI.
     """
-    manya_city = read_file(manya[key], ['Date', 'Single_Family_HPI_SA'])
-    clean_manya_city = manya_dataset.cleans_nan(manya_city)
-    timed_manya_city = manya_dataset.condense_time_manya(clean_manya_city, manya_year)
-    return timed_manya_city
+    hpi_city = read_file(hpis[key], ['Date', 'Single_Family_HPI_SA'])
+    clean_hpi_city = hpi_dataset.cleans_nan(hpi_city)
+    timed_hpi_city = hpi_dataset.condense_time_hpi(clean_hpi_city, hpi_year)
+    return timed_hpi_city
 
 
 def get_province(key: str) -> str:
@@ -261,7 +262,7 @@ def get_province(key: str) -> str:
     return province
 
 
-def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
+def create_items(condensed: list, key: str, timed_hpi_city: list[float]) -> \
         tuple[list[float], list[float], list[float]]:
     """
     Helper function for create_cities.
@@ -269,17 +270,15 @@ def create_items(condensed: list, key: str, timed_manya_city: list[float]) -> \
     house = []
     land = []
     house_land_avg = []
-
     for item in condensed:
         for single_key in item:
             if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from
-                # Sima's dataset
+                # the House and Land dataset
                 house = item[single_key][0]
                 land = item[single_key][1]
                 comp = item[single_key][2]  # Acquires the relevant information from the
                 # dictionary to call house_land_avg
-                house_land_avg = avg_datasets(timed_manya_city, comp)
-
+                house_land_avg = avg_datasets(timed_hpi_city, comp)
     return house, land, house_land_avg
 
 
@@ -314,24 +313,24 @@ def sort_file(dataframe: pd.DataFrame, keywords: set[str], column: str) -> pd.Da
     return pd.DataFrame(lst)
 
 
-def avg_datasets(list_cities: list[float], house_list: list[float]) -> list[float]:
+def avg_datasets(list_cities: list[float], house_land_list: list[float]) -> list[float]:
     """
-    Return a list of average values from Manya's Single Family HPI values and Sima's HPI value.
+    Return a list of average values from the Single Family HPI values and the total HPI value.
     This is for one specific city only.
 
     Preconditions:
-        - len(list_cities) == len(house_list)
+        - len(list_cities) == len(house_land_list)
     """
     return_list = []
     for i in range(len(list_cities)):
-        s = list_cities[i] + house_list[i]
+        s = list_cities[i] + house_land_list[i]
         avg = s / 2
         return_list.append(avg)
     return return_list
 
 
 if __name__ == '__main__':
-    city_list = create_cities(SIMA_FILE, SARAH_FILE, MANYA_FILES)
+    city_list = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     provinces = plot_cities(city_list)
     print('Cities have been plotted! Provinces are now being plotted. Thanks for your patience.')
 
@@ -345,8 +344,9 @@ if __name__ == '__main__':
     # import python_ta
     #
     # python_ta.check_all(config={
-    #     'extra-imports': ['classes', 'covid_dataset', 'manya_dataset', 'plotting', 'sarah_dataset',
-    #                       'sima_dataset', 'pandas'],
+    #     'extra-imports': ['classes', 'covid_dataset', 'hpi_dataset', 'plotting',
+    #                       'migration_dataset',
+    #                       'house_land_dataset', 'pandas'],
     #     # the names (strs) of imported modules
     #     # 'allowed-io': [],     # the names (strs) of functions that call print/open/input
     #     'max-line-length': 100,
