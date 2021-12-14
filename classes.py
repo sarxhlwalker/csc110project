@@ -72,7 +72,7 @@ def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
     city1 = city_list[0]
     city2 = city_list[1]  # just initializing these variables; won't actually use them
     for tup in merges:
-        for city in city_list:
+        for city in city_list:  # acquires the cities that have overlap
             if city.name == tup[0]:
                 city1 = city
             elif city.name == tup[1]:
@@ -80,9 +80,10 @@ def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
         name = city1.name + ' and ' + city2.name
         year = city1.year  # all year values are the same
         inter, intra, comp, house, land = append_values(city1, city2)
-        new_list.append(City(name, year, inter, intra, comp, house, land, city1.province))
-    tups = [val for x in merges for val in x]
-    for city in city_list:
+        new_list.append(City(name, year, inter, intra, comp, house, land, city1.province))  # create
+        # combined City and add to the list
+    tups = [val for x in merges for val in x]  # retrieve all values in merges
+    for city in city_list:  # adds all non-merged City instances
         if city.name not in tups:
             new_list.append(city)
     return new_list
