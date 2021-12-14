@@ -68,7 +68,7 @@ CITIES_HOUSE_LAND = ['Kitchener-Cambridge-Waterloo, Ontario',
 HOUSE_LAND_FILE = 'Data Sets/House and Land Prices.csv'
 MIGRATION_FILE = 'Data Sets/city migration and others.csv'
 HPI_FILES = {'Cambridge':
-                 'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
+             'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Cambridge.csv',
              'Fredricton':
                  'Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Fredricton.csv',
              'Greater Moncton':
@@ -101,7 +101,7 @@ HPI_FILES = {'Cambridge':
 
 def create_cities(house_land: str, migration: str, hpi: dict[str, str]) -> list[classes.City]:
     """
-    Create a list of City instances so that we can plot their values.
+    Return a list of City instances so that we can plot their values.
 
     >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
     """
@@ -130,8 +130,8 @@ def create_cities(house_land: str, migration: str, hpi: dict[str, str]) -> list[
         # Returns a five-item list of the city's interprovincial and intraprovincial values.
 
         city_accumulator.append(classes.City(key, [2016, 2017, 2018, 2019, 2020], city_inter,
-                                             city_intra, house_land_avg, house, land, province))  # Creates a
-        # classes.City instance and appends to city_accumulator
+                                             city_intra, house_land_avg, house, land, province))
+        # Creates a classes.City instance and appends to city_accumulator
 
     city_accumulator = classes.merge_cities(city_accumulator,
                                             [('Greater Moncton', 'Fredricton'),
@@ -154,7 +154,7 @@ def plot_cities(city_accumulator: list) -> set[str]:
         - city_accumulator != []
 
     >>> list_city = create_cities(HOUSE_LAND_FILE, MIGRATION_FILE, HPI_FILES)
-    >>> provs = plot_cities(city_accumulator)
+    >>> provs = plot_cities(list_city)
     """
     for city in city_accumulator:
         plotting.plot_migration(city)
@@ -177,13 +177,13 @@ def create_provinces(city_accumulator: list, covid_cases: dict[str, list[int]]) 
     >>> list_provs = create_provinces(list_city, dict_covid)
     """
     prov_accumulator = []
-    for province in covid_cases:
-        covid_nums = covid_cases[province]
+    for province in covid_cases:  # for each relevant province
+        covid_nums = covid_cases[province]  # save list for covid attribute
         cities = []
         for city in city_accumulator:
-            if city.province == province:
+            if city.province == province:  # find all cities with the province attribute
                 cities.append(city)
-        prov_accumulator.append(classes.Province(province, cities, covid_nums))
+        prov_accumulator.append(classes.Province(province, cities, covid_nums))  # create Province
     return prov_accumulator
 
 
@@ -220,7 +220,8 @@ def create_house_land(house_land: str) -> list:
     land only HPI, and the total house and land HPI.
     """
     adjusted_values = house_land_dataset.adjust_house_land_hpi(pd.read_csv(house_land))
-    restricted_cities = house_land_dataset.restrict_city_house_land(adjusted_values, CITIES_HOUSE_LAND)
+    restricted_cities = house_land_dataset.restrict_city_house_land(adjusted_values,
+                                                                    CITIES_HOUSE_LAND)
     split_type_for_cities = house_land_dataset.split_type_house_land(restricted_cities)
     condensed = house_land_dataset.run_condense_time(split_type_for_cities)
     house_land_dataset.append_house_land_csv(condensed)
@@ -271,7 +272,7 @@ def create_items(condensed: list, key: str, timed_hpi_city: list[float]) -> \
     land = []
     house_land_avg = []
     for item in condensed:
-        for single_key in item:
+        for single_key in item:  # each dictionary only has one key
             if single_key == CITY_DICT[key][1]:  # Finds the key/value of the relevant city from
                 # the House and Land dataset
                 house = item[single_key][0]
