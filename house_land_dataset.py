@@ -28,15 +28,15 @@ def adjust_house_land_hpi(dataframe: pd.DataFrame) -> dict[tuple[str, str, str],
     """
     hpi_base_case = []
     for row in range(34560, 34680):  # 2005-01
-        hpi_base_case.append(dataframe.loc[row, 'VALUE'])
+        hpi_base_case.append(dataframe.loc[row, 'VALUE'])  # collect original values
     adjusted_values = {}
     for row in range(49680, 56880):  # 2015-07 to 2020-06
         old_hpi = dataframe.loc[row, 'VALUE']
         key = (dataframe.loc[row, 'REF_DATE'], dataframe.loc[row, 'GEO'],
                dataframe.loc[row, 'New housing price indexes'])
-        if hpi_base_case[(row - 2) % 120] is not None and old_hpi is not None:
+        if hpi_base_case[(row - 2) % 120] is not None and old_hpi is not None:  # avoid nan values
             adjusted_values[key] = round((float(old_hpi) / float(hpi_base_case[row % 120]))
-                                         * 100, 1)
+                                         * 100, 1)  # calculations to adjust HPI value
         else:
             adjusted_values[key] = None
     return adjusted_values
@@ -86,7 +86,7 @@ def split_type_house_land(restricted_cities: list[dict[tuple[str, str, str], flo
                 composite_type[key] = value
                 # if count is a multiple of 3, the row contains data about total house and land HPIs
             elif count % 3 == 1:
-                house_type[key] = value
+                house_type[key] = value  # have organized so that it is then house followed by land
             else:
                 land_type[key] = value
             count += 1
@@ -109,7 +109,7 @@ def condense_time_house_land(dictionary: dict) -> list[float]:
     that_year = []
     for _, value in dictionary.items():
         if count % 11 == 0 and count > 1:  # Since there is a repetition of 12 rows (one per month)
-            return_list.append(round(sum(that_year) / 11, 1))
+            return_list.append(round(sum(that_year) / 11, 1))  # average values in that year
             that_year = []
         that_year.append(value)
         count += 1
@@ -137,7 +137,8 @@ def run_condense_time(split_type_for_cities: list[tuple[dict[tuple[str, str, str
             city_key = key[1]
         individual_city[city_key] = (condense_time_house_land(house),
                                      condense_time_house_land(land),
-                                     condense_time_house_land(composite))
+                                     condense_time_house_land(composite))  # keeping all 3 HPI
+        # types together
         cities.append(individual_city)
     return cities
 
@@ -146,8 +147,6 @@ def append_house_land_csv(cities: list[dict[str, tuple[list[float], list[float],
         -> None:
     """
     Appends csv files as needed.
-
-    Refer to sima_template.csv to see how they looked before the function was called.
 
     Preconditions:
         - cities != []
@@ -161,7 +160,6 @@ def append_house_land_csv(cities: list[dict[str, tuple[list[float], list[float],
                         value[1][3], value[1][4]]
             row_composite = [key, 'Composite (house and land)', value[2][0], value[2][1],
                              value[2][2], value[2][3], value[2][4]]
-
             with open('house_land_house.csv', 'a') as f_object:
                 writer_object = writer(f_object)
                 writer_object.writerow(row_house)

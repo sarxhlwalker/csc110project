@@ -38,7 +38,6 @@ def get_covid_cases_per_province(provinces: set[str]) -> dict[str, list[int]]:
         province_to_covid_cases[province] = get_covid_case_value(province, covid_file, c_reversed)
     # iterates through each province in the set provinces and finds the corresponding
     # number of covid cases in 2020 for that province
-
     return province_to_covid_cases
 
 
