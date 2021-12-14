@@ -40,8 +40,8 @@ def restrict_city_migration(inter: pd.DataFrame, intra: pd.DataFrame, city: str)
         tuple[list, list]:
     """
     Return the restriction of the data from split_file to the data only pertaining to city. No more
-    computations are needed on Sarah's dataset, so this returns a list, ready for input to class
-    City.
+    computations are needed on the migration dataset, so this returns a list, ready for input to
+    class City.
 
     >>> import main
     >>> city_migration = main.read_file('Data Sets/city migration and others.csv', \

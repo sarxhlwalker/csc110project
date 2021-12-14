@@ -17,7 +17,7 @@ import pandas as pd
 
 
 def cleans_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
-    """Removes random commas in Manya's dataframes.
+    """Removes random commas in the HPI dataframes.
 
     >>> import main
     >>> file = \
@@ -30,7 +30,7 @@ def cleans_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 def condense_time_hpi(dataframe: pd.DataFrame, range_of_years: list[str]) -> list[float]:
     """
-    Create a copy of one of Manya's dataframes such that Date is the span of one year,
+    Create a copy of one of an HPI dataframe such that Date is the span of one year,
      and Single_Family_HPI_SA is adjusted accordingly.
 
      Preconditions:

@@ -25,16 +25,16 @@ def plot_migration(city: City) -> None:
     Plots inter and intra values for one city as a line graph.
     """
     file_name = 'City_Plots/' + city.name + '_migration.html'
-    plot.output_file(file_name)
+    plot.output_file(file_name)  # name file to be saved
     p = plot.figure(title=(city.name + ' migration'))
     colours = palettes.viridis(6)
     p.line(x=city.year, y=city.intraprovincial, line_color=colours[0],
-           legend_label='Intraprovincial')
+           legend_label='Intraprovincial')  # add lines to graph
     p.line(x=city.year, y=city.interprovincial, line_color=colours[5],
            legend_label='Interprovincial')
 
     p.legend.location = "top_right"
-    p.legend.click_policy = "hide"
+    p.legend.click_policy = "hide"  # if you click on a legend value, the line disappears
 
     plot.save(p)
 
@@ -49,15 +49,15 @@ def plot_hpi(city: City) -> None:
     palette = palettes.viridis(6)
     colours = [palette[2], palette[3], palette[4]]
 
-    y_axis = ['Total (house and land)', 'House only', 'Land only']
+    y_axis = ['Total (house and land)', 'House only', 'Land only']  # the three stacks
 
-    data = {'years': ['2016', '2017', '2018', '2019', '2020'],
-            'Total (house and land)': list(city.house_land_avg),
+    data = {'years': ['2016', '2017', '2018', '2019', '2020'],  # x-axis
+            'Total (house and land)': list(city.house_land_avg),  # values for stacks
             'House only': list(city.house_avg),
             'Land only': list(city.land_avg)}
 
     p = plot.figure(x_range=[str(x) for x in city.year], title=(city.name + ' HPI'))
-    p.vbar_stack(y_axis, x='years', width=0.9, source=data, fill_color=colours,
+    p.vbar_stack(y_axis, x='years', width=0.9, source=data, fill_color=colours,  # create plot
                  legend_label=list(y_axis))
 
     p.legend.location = "top_left"
@@ -80,11 +80,11 @@ def plot_intraprovincial(province: Province, index: int) -> None:
     for x in range(len(province.city_list)):
         p.line(x=province.city_list[x].year, y=province.city_list[x].intraprovincial,
                legend_label=province.city_list[x].name,
-               line_color=colours[x])
+               line_color=colours[x])  # create a line per city in the province
 
-    covid_cases = divide_covid_cases(province.covid_cases, index)
+    covid_cases = divide_covid_cases(province.covid_cases, index)  # adjust covid scale
 
-    p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases,
+    p.line(x=[2016, 2017, 2018, 2019, 2020], y=covid_cases,  # create a line for covid data
            legend_label='COVID cases divided by ' + str(index),
            line_color=colours[len(province.city_list)])
 
