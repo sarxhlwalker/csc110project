@@ -42,8 +42,7 @@ def condense_time_manya(dataframe: pd.DataFrame, range_of_years: list[str]) -> l
     main.read_file('Data Sets/Housing Prices Dataset (MLS)/Seasonally Adjusted Saint John.csv', \
             ['Date', 'Single_Family_HPI_SA'])
     >>> clean_file = cleans_nan(file)
-    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'], \
-            'Single_Family_HPI_SA')
+    >>> condensed = condense_time_manya(clean_file, ['2015', '2016', '2017', '2018', '2019'])
     """
     return_list = []
     for x in range_of_years:
