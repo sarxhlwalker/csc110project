@@ -69,11 +69,8 @@ def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
         - len(city_list) != 0
     """
     new_list = []
-    # city_names = [name1 for name1, _ in merges] + [name2 for _, name2 in merges]
     city1 = city_list[0]
     city2 = city_list[1]  # just initializing these variables; won't actually use them
-    # moncton = city_list[0]
-    # fredricton = city_list[1]
     for tup in merges:
         for city in city_list:
             if city.name == tup[0]:
@@ -84,16 +81,10 @@ def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
         year = city1.year  # all year values are the same
         inter, intra, comp, house, land = append_values(city1, city2)
         new_list.append(City(name, year, inter, intra, comp, house, land, city1.province))
-
     tups = [val for tup in merges for val in tup]
     for city in city_list:
         if city.name not in tups:
             new_list.append(city)
-
-    # name = 'Greater Moncton and Fredricton'
-    # year = moncton.year
-
-    # new_list.append(City(name, year, inter, intra, comp, house, land, moncton.province))
     return new_list
 
 
@@ -106,23 +97,16 @@ def append_values(city1: City, city2: City) -> tuple[list, list, list, list, lis
     comp = []
     house = []
     land = []
-    for i in range(5):  # TODO: should this be averaged? should there be a metric input
-        # (ie. why it's being merged?)
+    for i in range(5):
         inter.append(city1.interprovincial[i])   # the migration dataset is too general and has the
         # same values for both city1 and city2
         intra.append(city1.intraprovincial[i])
-        # inter.append(city1.interprovincial[i] + city2.interprovincial[i])
-        # intra.append(city1.intraprovincial[i] + city2.intraprovincial[i])
         comp.append((city1.house_land_avg[i] + city2.house_land_avg[i]) / 2)  # the HPI dataset
         # has two different values for the cities and so there will be two different averages,
         # so we average the two averages.
-
         house.append(city1.house_avg[i])  # Again, the House and Land dataset is too general and
         # so will have the same values across both cities
         land.append(city1.land_avg[i])
-
-        # house.append(city1.house_avg[i] + city2.house_avg[i])
-        # land.append(city1.land_avg[i] + city2.land_avg[i])
     return inter, intra, comp, house, land
 
 
