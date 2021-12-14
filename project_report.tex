@@ -1,0 +1,207 @@
+\documentclass[fontsize=11pt]{article}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+}
+\documentclass{article}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+
+\title{CSC110 Project Report\\ COVID-19: Canadian Migration Influencing Real Estate Prices}
+\author{Grace Fung, Manya Mittal, Sima Shmuylovich, Sarah Walker}
+\date{December 2021}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction: Problem Description and Research Question}
+
+\textbf{Research Question: What is the relationship between COVID-19, Canadian migration patterns, and real estate prices?}\\
+
+We are studying the effect of COVID-19 on migration patterns in some of Canada's major metropolitan cities and their neighbouring cities. We will then analyse whether the change in real estate prices reflect the change in migration, which is potentially caused by COVID-19. \\
+
+We have chosen this topic due to its current relevance. In general, real estate prices in the suburbs have been increasing significantly, and people have been leaving the bigger cities (Hopper, 2021). Other “young people” (who are older than us) who are currently searching for housing accommodations may be affected by the change in real estate prices. We want to determine to what extent COVID has impacted their ability to find accommodation because of migration trends that have potentially influenced real estate prices. \\
+
+Due to the COVID-19 pandemic, many companies and schools shifted their operations online to accommodate for the lockdown. This resulted in “millions of Canadians [now being able to] work remotely” (Hopper, 2021). This may be a motivating factor for people to move out of large cities  to live in an open area due to the increased time spent at home and the reduced need to commute. The real estate prices in the suburbs may therefore increase along with demand, while the housing prices in cities may decrease as people move out. In our project, we want to determine whether, and if so how, this pattern is reflected in actual data from the Canadian government. \\
+
+While considering the data for real estate prices, we will be using “seasonally adjusted” data. In this context, this means that our data for real estate prices will not consider the influences of the predictable seasonal patterns (“What Is Seasonal Adjustment?”, 2001). This is important because removing these influences allows us to focus on the impact of COVID-19, rather than being distracted by other influences. \\
+
+We will be using the House Price Index (HPI) when analysing the data for real estate because our datasets for housing prices both use HPI. HPI measures the rate at which housing prices change over time and also factors in the types of housing (“MLS Home Price Index Explained”, n.d.).
+
+\newpage
+
+\section{Description of Datasets}
+
+Our project consists of four sets of datasets that are all .csv files. \\
+
+The first dataset (“city migration and others.csv”) contains data about migration in Canada, which is from Statistics Canada.  We used the ‘REF\_DATE’ column that is in the format yyyy/yyyy. These dates go from 1st July of the starting year to 30th June of the ending year. For example, 2015/2016 refers to the time period between 1st July 2015 to 30th June 2016. We also used the ‘GEO’ column to only obtain the data for the cities that we want. The ‘Components of population growth’ column was used to separate this dataset into the data for interprovincial migration and intraprovincial migration. Finally, we used the ‘VALUE’ column to access the actual statistics that relate to each category. \\
+
+Our second set dataset was from the Canadian Real Estate Association (CREA). These datasets are those of the formatting “Seasonally Adjusted [city].csv”; for example, “Seasonally Adjusted Greater Vancouver.csv”. They contain data about the housing prices of different types of housing, as well a composite value. We used the ‘Single\_Family\_HPI\_SA’ for each city as our data. We also used the ‘Date’ column, as we needed to aggregate the dates into years rather than months. The dataset provides both HPI values (explained above) and benchmark prices. We chose to use the HPI values since benchmark prices may sometimes be inaccurate due to fluctuations between months. \\
+
+The third dataset (“House and Land Prices.csv”) includes data about house and land prices and is from Statistics Canada. We used the ‘REF\_DATE’ column that is in the format yyyy-mm, so we aggregated these into years as well. We used the ‘New housing price indexes’ column to separate the House only, Land only and Total (House and Land) data to compare them. We retrieved the actual data from the ‘VALUE’ column. The ‘GEO’ column’ was used to sort the data into each city.\\
+
+Finally, the last dataset (“covid19-download.csv”) from Statistics Canada contains data about the number of daily COVID-19 cases in Canada by province. We used the ‘prname’ and ‘numtotal’ columns as we wanted to see the cumulative number of COVID cases in each province to compare them to our migration and real estate prices for each province.\\
+
+In all the datasets, we only considered the values of the dates from 1st July 2015 to 30th June 2020 to obtain the most relevant data and to be consistent throughout our datasets.
+
+\newpage
+
+\section{Computational Overview}
+
+The main purpose of our program is to aggregate data from four different datasets and filter out the data about our desired cities. We chose to focus on the following cities: Greater Moncton and Fredericton, Greater Toronto, Greater Vancouver, Cambridge and Kitchener and Waterloo, London St Thomas, Montreal CMA, Niagara Region, Quebec CMA, Saint John, and Victoria. This is because these are the only cities where there is overlap between our four datasets. \\
+
+The program is split into separate modules for each dataset that have dataset specific functions. \\
+
+In classes.py, we have two classes: ‘City’ and ‘Province’. Our program aggregates data from three different datasets about migration and housing/land prices in Canada into instances of the ‘City’ class that represent each of our desired cities. The data is stored in various attributes including but not limited to: name, year, and total HPI. \\
+
+The Province class is used to group cities into the different provinces that they are in. This is to plot them together and compare their trends alongside the COVID-19 data. Therefore, the province class has three attributes: name, list of cities in that province, and the corresponding COVID cases. \\
+
+However, since our datasets have dates in different formats, we first created functions that transform the data into the same format to make it easier to aggregate and plot our data.\\
+
+We decided to use the format in the migration dataset which stores the dates in years as it is the largest time period. Since the years in migration dataset span from July to June, the functions $condense\_time\_hpi$ and its helper function $iterate\_twelve$ in the $hpi\_dataset$ file transform the dates in the Housing Prices Dataset (MLS) from months to years that go from July 1st in one year to June 31st of the next year. We do this using the Pandas library which allows us to represent our datasets as DataFrames. In $condense\_time\_hpi$, we iterate through all the rows in the DataFrame and use the .loc method to find a row that is in July. We then call the $iterate\_twelve$ function to add the data from the next 11 rows to aggregate the data for one year.  \\
+
+In the $house\_land\_dataset$ module, the function $condense\_time\_house\_land$ has a similar purpose for the dataset about house and land prices. We needed a section function because the format between the two datasets are slightly different.\\
+
+Furthermore, the migration dataset contains data about interprovincial and intraprovincial migration within the same dataset. However, we wanted to separate these to be able to compare the data separately. We did this in the $split\_type\_migration$ function using the Pandas library’s DataFrames. The $split\_type\_house\_land$ function has a similar purpose but splits the House and Land Prices dataset into three parts: data about house and land together, house only, and land only. \\
+
+We also needed to filter the migration dataset to obtain only the data for our desired cities, so we created the function $restrict\_city\_migration$. This function filters through the inputted DataFrames and returns two lists corresponding to the interprovincial and intraprovincial migration values for our chosen time period and specific city. We used the Pandas library to go through each row of the dataset using the iterrows function that returns each row in a tuple of the form (index, Series). A Series in Pandas is a one-dimensional array. We then iterated through each Series using a for loop and obtained the data for only the given city. We did this using the .loc method of a DataFrame to access the data from the ‘GEO’ column. After calling this function, we can directly add its results to an instance of the class City. \\
+
+We didn’t need a similar function for the HPI dataset, as each city came with its own dataset, but we had to restrict cities for the House and Land dataset as well. We did this by a helper function in main.py called $create\_items$; with an inputted string corresponding to the city we’re looking for, we iterate through the list that the module $house\_land\_dataset$ returns and search for the key in a dictionary that matches our city string. Then, we can take and return those values. \\
+
+Finally, in the plotting.py module, we created multiple functions to plot all of our graphs. These functions all use the Bokeh library so that we could represent our graphs as HTML graphs. From Bokeh we imported ‘plotting’ to call Bokeh’s figure function. This function creates a new instance of Bokeh’s Figure class which allows us to actually plot the graphs using the ‘line’ method. The line method allowed us to specify the data we want on the x- and y-axis and then plot the graph accordingly. The functions $plot\_migration$, $plot\_intraprovincial$, $plot\_interprovincial$, $plot\_tot\_hpi$, $plot\_house\_hpi$ and $plot\_land\_hpi$ all use this methodology. The $plot\_hpi$ function uses the $vbar\_stack$ method within Bokeh’s Figure class to plot a bar graph where each bar is separated into three sections for house only, land only, and total (house and land). This represents all three HPI values per city stacked up on top of each other, with the x-axis being the years. \\
+
+Finally, the functions in the main.py module automatically create instances of the City and Province classes and call the plot functions accordingly. This removes the necessity of user input when running the main.py file; all of our functions are automatically called.
+
+\newpage
+
+\section{Instructions}
+
+All the datasets mentioned below must be saved in a folder called ‘Data Sets’ which is in the same folder as main.py. Additionally, the datasets from CREA must be saved in their own folder called ‘Housing Prices Dataset (MLS)’. See the image below for how we have organized our datasets. \\
+
+\includegraphics{images/dataset setup.PNG}
+
+To save time, you can download all of our datasets with the following information:
+\begin{enumerate}
+    \item{Claim ID: UrdP3b2X2dYjdfDd}
+    \item{Claim Passcode: skPrcFYeSbwVo6EN}
+\end{enumerate}
+
+We originally got the migration dataset from this link:\\ \href{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710013601}{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710013601}.\\
+
+We got the raw Housing Prices Dataset from the following link: \href{https://creastats.crea.ca/en-CA/}{https://creastats.crea.ca/en-CA/}. Click on the download button and agree to the terms of use. This will download all of the data in a zip file. Only the ‘Seasonally Adjusted’ file is needed. \\
+
+However, this is an Excel sheet that has multiple sheets, one for each city. For our dataset, we only used the data for our desired cities (mentioned in the computational overview). We saved each corresponding sheet in the Excel file as a separate .csv file. \\
+
+Again, you can use the claim provided earlier to gain access to all the .csv files for this dataset. Additionally, please ensure that these files are saved in a subfolder called ‘Housing Prices Dataset (MLS)’ inside the ‘Data Sets’ folder. \\
+
+The original House and Land Prices dataset came from the following link:\\ \href{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810007301}{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810007301}.\\
+
+The original Covid-19 dataset came from the following link:\\ \href{https://open.canada.ca/data/en/dataset/261c32ab-4cfd-4f81-9dea-7b64065690dc}{https://open.canada.ca/data/en/dataset/261c32ab-4cfd-4f81-9dea-7b64065690dc}. Download the file called ‘Public Health Infobase - Data on COVID-19 in Canada’, which can be found under the ‘Data and Resources’ subheading.\\
+
+After the datasets have been acquired, please then create the following files in the general project folder:
+\begin{enumerate}
+    \item{house\_land\_composite.csv}
+    \item{house\_land\_house.csv}
+    \item{house\_land\_land.csv}
+\end{enumerate}
+
+These files should be empty. \\
+
+Please also create the following folders in the general project folder:
+\begin{enumerate}
+    \item{Province\_Plots}
+    \item{City\_Plots}
+\end{enumerate}
+
+These folders will also be empty. Our functions in plotting.py will write HTML link files into these folders, which you can open afterwards in a browser of your choice to view our graphs.\\
+
+Once again, you can see the image below for how we have organized our files. \\
+
+\includegraphics{images/folders and such.PNG}\\
+
+All you need to do now is run main.py in the console. The aforementioned HTML files will be saved to their respective folders; you can open them individually in your browser afterwards.\\
+
+For example, you should see something like this for the City\_Plots folder and one of its graphs: \\
+
+\includegraphics{images/city plots.PNG}
+
+\includegraphics{images/graph.PNG} \\
+
+Please note the files take a moment to run. In the if \_\_main\_\_ block, we have added a couple print statements to indicate how far the project has gone. You should ultimately see something like this after running main.py: \\
+
+\includegraphics[scale=0.5]{images/console.PNG}\\
+
+The graphs opened in the browser can be interacted with; you can zoom in and out and move the graph around. If you would like to see a static version of all the graphs, we have included a PDF ("Bokeh\_Plots.pdf") in our submission.
+
+\newpage
+
+\section{Changes After Proposal}
+
+The biggest change we made from our original proposal was the addition of a new dataset about COVID-19 cases. We did this to better determine an association between the migration, real estate prices, and COVID. \\
+
+Another big change is that we used a library called Pandas to help us process and transform our data. We weren’t planning on using this library before, but we found that it simplified some of the original processes managing the dataset, such as reading the files, removing unnecessary columns, and removing NaN values. \\
+
+We also created a new class called ‘Province’ to plot group cities into the province that they’re in and plot their data together to compare. We originally wanted to compare the big cities in each province to their corresponding smaller cities, and we found that only having a number of graphs for the class City made things a bit messy. We thought it would make comparison easier when we could group cities by province; then, of course, we can see that cities in New Brunswick had a relatively low number of cases altogether and consider how that might affect migration as opposed to Quebec, which had a large number of cases. \\
+
+Through creating the Province class, we were then able to create functions to plot data for the provinces specifically; as in, we could create graphs directly contrasting the cities and the number of COVID cases and use that for our analysis instead of each individual city. \\
+
+Our last, smallest change is that instead of having the years in our City class as a list of a tuple of datetime.dates, we kept it as a list of integers. It made more sense to have a single value as each element of the list, rather than two, as we wanted this list to correspond to the x-axis. \\
+
+\newpage
+
+\section{Discussion}
+
+While going through all of our generated graphs, it may be difficult to notice a pattern between COVID-19, the different migration values, and the different HPI values. \\
+
+It appears that the trends for the HPI and migration continue in the same pattern, regardless of the sudden increase in COVID-19 cases. For example, if we consider the Province Plot for Ontario for intraprovincial migration, we can see that the trends for Greater Toronto and Cambridge, Kitchener and Waterloo continue in the same pattern after COVID-19 as before COVID-19. We can also see that the intraprovincial migration decreases slightly for London St Thomas and Niagara Region after 2020, when the pandemic started affecting Canada. The same can be observed for the Province Plot of British Columbia for the house HPI of Greater Vancouver and Victoria. However, these trends are not very significant as the decrease is very small, and it does not necessarily occur for the other cities and values. Therefore, although we observed some change in the HPI and migration for some cities, we cannot conclude an overall relationship between COVID-19 cases, migration and house and land prices because of the limitations on our data.\\
+
+However, the Province Plots were generally more helpful than the City Plots because the Province Plots allowed us to juxtapose the different cities with the COVID data. This is more helpful than trying to analyze each city individually. \\
+
+The main limitation of our project was the fact that we had to combine multiple datasets because we could not find one dataset that had all the data that we wanted to compare. The issue with this is that some of the data did not match between datasets. For example, the dates being different meant that we had to transform them ourselves. Also, the HPI values in two of our datasets had different base years so we had to adjust the House and Land dataset to have the same base year as the Housing Prices Dataset (MLS). This may cause inaccuracies and could affect the reliability of our conclusions. \\
+
+Furthermore, another limitation of the project was the number of cities that we were able to analyze. We were only able to use the cities that were included in each dataset since we needed to aggregate the values which greatly restricted our total number of cities. This means that our conclusions may not hold true for the excluded cities, meaning that we cannot make reliable general conclusions. Also, some of the datasets combined the data for the smaller cities like ‘Moncton and Fredericton’ and ‘Cambridge and Kitchener and Waterloo’. However, since other datasets did not combine these, we had to combine them ourselves or choose which city we kept the data from to avoid having duplicate values. \\
+
+In addition, since the pandemic is still ongoing, we struggled to find recent data. We were only able to find data until June 2020, so we could not consider data from 2021 as it has not yet been released. Therefore, our analysis of the impact of COVID-19 may not be entirely accurate since we can observe the patterns before and during the pandemic, but not directly after. \\
+
+There were also a few limitations with the Bokeh library. Bokeh requires that a single figure belongs to only one HTML file. This meant that we were unable to have multiple graphs together, which is what we originally aimed to do. Perhaps if we were aware of this limitation, we could have used a different Python library that has this functionality, or we could spend more time exploring other Bokeh functions. However, this was infeasible with our given timeframe, so it could be a future development of our program. \\
+
+In the future, we could improve our program by presenting our findings in a more easily-understandable manner. We found it was difficult determining how to best organize our data visually for optimized ease in analyzing, given how much we wanted to compare. Therefore, researching how to best use Bokeh or another plotting library would be beneficial. For example, using Bokeh, we could restructure our program to create multiple figures in one go and save them into one HTML file. Alternatively, we could format the data into different types of charts that make data comparison easier. \\
+
+We could also include a population metric for each city or province. Then, we could more easily determine which cities were larger and by how much. It could be possible that there’d be a more subtle correlation between COVID-19 and our other data. In terms of percentages, how does net interprovincial or intraprovincial migration compare to population, and does COVID-19 influence that? If the population is decreasing in a city, but the HPI values are increasing, or vice-versa, does that imply influence from COVID-19? Questions like these could be considered. This would likely be more effective if we had more cities or provinces in Canada, because then our data would be more representative of Canada as a whole and our findings thus more concrete.
+
+\newpage
+
+\section{References}
+
+\quad \, \quad Components of Population Change by Census Metropolitan Area and Census Agglomeration, 2016 Boundaries, Government of Canada, Statistics Canada, 14 Jan. 2021,\\ \href{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710013601}{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710013601}. \\
+
+\quad Contributors, Bokeh. “Bokeh.plotting.” Bokeh.plotting - Bokeh 2.4.1 Documentation, Bokeh, \\ \href{https://docs.bokeh.org/en/latest/docs/reference/plotting.html?highlight=plotting}{https://docs.bokeh.org/en/latest/docs/reference/plotting.html?highlight=plotting}. \\
+
+\quad Contributors, Bokeh. “Figure.” Figure - Bokeh 2.4.1 Documentation, Bokeh, \\ \href{https://docs.bokeh.org/en/latest/docs/reference/plotting/figure.html?highlight=figure\#bokeh.plotting.figure}{https://docs.bokeh.org/en/latest/docs/reference/plotting/figure.html?highlight=figure\#bokeh.plotting.figure}. \\
+
+\quad Contributors, Bokeh. “Plotting with Basic Glyphs.” Plotting with Basic Glyphs - Bokeh 2.4.1 Documentation, Bokeh,
+\href{https://docs.bokeh.org/en/latest/docs/user\_guide/plotting.html?highlight=figure}{https://docs.bokeh.org/en/latest/docs/user\_guide/plotting.html?highlight=figure}.\\
+
+\quad Hopper, Tristin. “The New Canada: How Covid-19 Pushed Real Estate Buyers into the Hinterland.” National Post, National Post, 15 Mar. 2021, \\ \href{https://nationalpost.com/news/canada/the-new-canada-how-covid-19-pushed-real-estate-buyers-into-the-hinterland}{https://nationalpost.com/news/canada/the-new-canada-how-covid-19-pushed-real-estate-buyers-into-the-hinterland}. \\
+
+\quad “MLS® Home Price Index (HPI).” CREA,\\ \href{https://www.crea.ca/housing-market-stats/mls-home-price-index/}{https://www.crea.ca/housing-market-stats/mls-home-price-index/}.
+
+\quad “MLS® Home Price Index Explained.” REBGV.org, \href{https://www.rebgv.org/news-archive/mls-home-price-index-explained.html}{https://www.rebgv.org/news-archive/mls-home-price-index-explained.html}. \\
+
+\quad “National Statistics.” October 2021 News Release | CREA Statistics, Canadian Real Estate Association, \href{https://creastats.crea.ca/en-CA/}{https://creastats.crea.ca/en-CA/}. \\
+
+\quad “New Housing Price Indexes (1997=100)”. Statistics Canada, Statistics Canada, 27 Feb. 2017, Updated Monthly. \href{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810007301}{https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810007301}.  \\
+
+\quad “What Is Seasonal Adjustment?” U.S. Bureau of Labor Statistics, U.S. Bureau of Labor Statistics, 16 Oct. 2001, \href{https://www.bls.gov/cps/seasfaq.htm}{https://www.bls.gov/cps/seasfaq.htm}.\\
+
+\quad Wilson, Elizabeth. “Benchmark vs Average vs Median - What's the Difference?” REW, REW, 4 Sept. 2014,\\
+\href{https://www.rew.ca/news/benchmark-vs-average-vs-median-what-s-the-difference-1.2096130}{https://www.rew.ca/news/benchmark-vs-average-vs-median-what-s-the-difference-1.2096130}. \\
+
+\end{document}
