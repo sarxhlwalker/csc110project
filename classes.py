@@ -60,7 +60,7 @@ class City:
         self.province = province
 
 
-def moncton_and_fredericton(city_list: list[City]) -> list[City]:
+def merge_cities(city_list: list[City], merges: list[tuple]) -> list[City]:
     """
     Combine the Moncton and Fredericton City instances because we have data overlap in Manya and
     Sima's data.
@@ -69,31 +69,50 @@ def moncton_and_fredericton(city_list: list[City]) -> list[City]:
         - len(city_list) != 0
     """
     new_list = []
-    moncton = city_list[0]  # because pycharm hates me
-    fredricton = city_list[1]  # because pycharm hates me pt 2
-    for city in city_list:
-        if city.name != 'Greater Moncton' and city.name != 'Fredricton':
-            new_list.append(city)
-        elif city.name == 'Greater Moncton':
-            moncton = city
-        elif city.name == 'Fredricton':
-            fredricton = city
+    # city_names = [name1 for name1, _ in merges] + [name2 for _, name2 in merges]
+    city1 = city_list[0]
+    city2 = city_list[1]  # just initializing these variables; won't actually use them
+    # moncton = city_list[0]
+    # fredricton = city_list[1]
+    for tup in merges:
+        for city in city_list:
+            if city.name == tup[0]:
+                city1 = city
+            elif city.name == tup[1]:
+                city2 = city
+        name = city1.name + ' and ' + city2.name
+        year = city1.year  # all year values are the same
+        inter, intra, comp, house, land = append_values(city1, city2)
+        new_list.append(City(name, year, inter, intra, comp, house, land, city1.province))
 
-    name = 'Greater Moncton and Fredricton'
-    year = moncton.year
+    tups = [val for tup in merges for val in tup]
+    for city in city_list:
+        if city.name not in tups:
+            new_list.append(city)
+
+    # name = 'Greater Moncton and Fredricton'
+    # year = moncton.year
+
+    # new_list.append(City(name, year, inter, intra, comp, house, land, moncton.province))
+    return new_list
+
+
+def append_values(city1: City, city2: City) -> tuple[list, list, list, list, list]:
+    """
+    Helper function for merge_cities.
+    """
     inter = []
     intra = []
     comp = []
     house = []
     land = []
-    for i in range(5):
-        inter.append(moncton.interprovincial[i] + fredricton.interprovincial[i])
-        intra.append(moncton.intraprovincial[i] + fredricton.intraprovincial[i])
-        comp.append(moncton.house_land_avg[i] + fredricton.house_land_avg[i])
-        house.append(moncton.house_avg[i] + fredricton.house_avg[i])
-        land.append(moncton.land_avg[i] + fredricton.land_avg[i])
-    new_list.append(City(name, year, inter, intra, comp, house, land, moncton.province))
-    return new_list
+    for i in range(5):  # TODO: should this be averaged? should there be a metric input (ie. why it's being merged?) 
+        inter.append(city1.interprovincial[i] + city2.interprovincial[i])
+        intra.append(city1.intraprovincial[i] + city2.intraprovincial[i])
+        comp.append(city1.house_land_avg[i] + city2.house_land_avg[i])
+        house.append(city1.house_avg[i] + city2.house_avg[i])
+        land.append(city1.land_avg[i] + city2.land_avg[i])
+    return inter, intra, comp, house, land
 
 
 class Province:
